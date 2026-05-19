@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>易 · 观此刻</title>
+
+<style>
+:root {
+  --bg:#f3efe7;
+  --card:#fffdf8;
+  --ink:#2d2923;
+  --muted:#7b7268;
+  --soft:#a99b88;
+  --line:#d8d0c3;
+  --accent:#4f3f2d;
+  --light:#ebe2d4;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans SC","Noto Sans JP","Microsoft YaHei",sans-serif;
+  line-height:1.7;
+}
+
+.app {
+  max-width:480px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:22px 16px 36px;
+}
+
+.card {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:30px 22px;
+  min-height:82vh;
+  box-shadow:0 18px 48px rgba(70,55,35,.07);
+}
+
+.step { display:none; }
+.step.active { display:block; animation:fade .35s ease; }
+
+@keyframes fade {
+  from { opacity:0; transform:translateY(8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.eyebrow {
+  font-size:11px;
+  letter-spacing:.22em;
+  color:var(--soft);
+  text-transform:uppercase;
+  margin-bottom:22px;
+}
+
+.home-title {
+  font-size:31px;
+  font-weight:500;
+  letter-spacing:.08em;
+  font-family:"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif;
+  margin-bottom:42px;
+}
+
+.home-line {
+  font-size:17px;
+  color:var(--accent);
+  margin-bottom:36px;
+}
+
+.home-copy {
+  font-size:15px;
+  color:var(--muted);
+  line-height:1.9;
+  margin-bottom:54px;
+}
+
+h2 {
+  font-size:24px;
+  font-weight:500;
+  line-height:1.45;
+  margin:0 0 20px;
+  font-family:"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif;
+}
+
+p {
+  color:var(--muted);
+  font-size:15px;
+}
+
+button {
+  width:100%;
+  border:none;
+  border-radius:999px;
+  padding:14px 16px;
+  font-size:15px;
+  background:var(--accent);
+  color:#fffdf8;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+button.secondary {
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--line);
+}
+
+button:disabled {
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+textarea, select {
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fffaf2;
+  padding:14px;
+  font-size:16px;
+  color:var(--ink);
+  margin:8px 0 18px;
+}
+
+textarea {
+  min-height:145px;
+  resize:vertical;
+  line-height:1.7;
+}
+
+label {
+  display:block;
+  margin-top:14px;
+  color:var(--accent);
+  font-size:14px;
+}
+
+.breath-circle {
+  width:160px;
+  height:160px;
+  border:1px solid var(--accent);
+  border-radius:50%;
+  margin:38px auto 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--accent);
+  font-size:24px;
+  letter-spacing:.12em;
+  transform:scale(.86);
+  opacity:.58;
+}
+
+.breath-circle.inhale {
+  transform:scale(1.08);
+  opacity:1;
+  transition:transform 4s ease-in-out, opacity 4s ease-in-out;
+}
+
+.breath-circle.exhale {
+  transform:scale(.86);
+  opacity:.58;
+  transition:transform 6s ease-in-out, opacity 6s ease-in-out;
+}
+
+.breath-info {
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+  margin:8px 0 14px;
+}
+
+.breath-guide {
+  text-align:center;
+  color:var(--soft);
+  font-size:13px;
+  margin:-6px 0 16px;
+}
+
+.breath-progress {
+  width:78%;
+  height:3px;
+  background:var(--line);
+  border-radius:999px;
+  overflow:hidden;
+  margin:0 auto 26px;
+}
+
+.breath-progress-bar {
+  height:100%;
+  width:0%;
+  background:var(--accent);
+  border-radius:999px;
+}
+
+.breath-progress-bar.inhale {
+  width:100%;
+  transition:width 4s linear;
+}
+
+.breath-progress-bar.exhale {
+  width:100%;
+  transition:width 6s linear;
+}
+
+.question-box {
+  background:#f4eee5;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px 16px;
+  margin:26px 0 18px;
+}
+
+.question-main {
+  font-size:21px;
+  line-height:1.65;
+  font-weight:500;
+  color:var(--ink);
+  white-space:pre-line;
+}
+
+.question-sub {
+  margin-top:16px;
+  color:var(--muted);
+  font-size:14px;
+  white-space:pre-line;
+}
+
+.notice {
+  padding:15px;
+  background:var(--light);
+  border-radius:16px;
+  color:var(--accent);
+  font-size:14px;
+  margin:22px 0;
+}
+
+.hexagram {
+  text-align:center;
+  margin:22px 0 28px;
+  padding:22px 0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+
+.hex-lines {
+  display:inline-flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:20px;
+}
+
+.line {
+  width:122px;
+  height:8px;
+  background:var(--ink);
+  border-radius:8px;
+}
+
+.line.broken {
+  background:none;
+  display:flex;
+  justify-content:space-between;
+}
+
+.line.broken::before,
+.line.broken::after {
+  content:"";
+  width:48px;
+  height:8px;
+  background:var(--ink);
+  border-radius:8px;
+}
+
+.gua-name {
+  font-size:25px;
+  letter-spacing:.08em;
+  font-family:"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif;
+}
+
+.meta {
+  color:var(--muted);
+  font-size:14px;
+  margin-top:8px;
+}
+
+.moving-card {
+  background:var(--light);
+  color:var(--accent);
+  border-radius:18px;
+  padding:16px;
+  margin:18px 0;
+  font-size:15px;
+}
+
+details {
+  background:#f8f3ea;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  margin:12px 0;
+}
+
+summary {
+  cursor:pointer;
+  color:var(--accent);
+}
+
+.text-block {
+  white-space:pre-wrap;
+  font-size:14px;
+  margin-top:12px;
+}
+
+.toast {
+  position:fixed;
+  left:50%;
+  bottom:28px;
+  transform:translateX(-50%);
+  background:var(--accent);
+  color:#fffdf8;
+  border-radius:999px;
+  padding:10px 16px;
+  font-size:13px;
+  opacity:0;
+  transition:.25s;
+}
+
+.toast.show { opacity:1; }
+</style>
+</head>
+
+<body>
+<main class="app">
+<div class="card">
+
+<section class="step active" id="step-0">
+  <div class="eyebrow">I CHING OBSERVATION</div>
+  <div class="home-title">易 · 观此刻</div>
+  <div class="home-line">不问未来，先观此刻。</div>
+  <div class="home-copy">
+    当你被一个问题困住，<br>
+    不需要立刻得到答案。
+  </div>
+  <button id="startBtn" onclick="showStep(1)" disabled>数据读取中...</button>
+</section>
+
+<section class="step" id="step-1">
+  <div class="eyebrow">BREATHING</div>
+  <h2>我们先把速度降下来</h2>
+  <p>跟着这个节奏</p>
+
+  <div class="breath-circle" id="breathCircle">吸气</div>
+
+  <div class="breath-info" id="breathRound">第 1 / 3 次</div>
+  <div class="breath-guide" id="breathGuide">4 秒吸气 · 6 秒呼气</div>
+
+  <div class="breath-progress">
+    <div class="breath-progress-bar" id="breathProgressBar"></div>
+  </div>
+
+  <button class="secondary" onclick="showStep(0)">返回</button>
+  <button id="breathNext" onclick="showStep(2)" disabled>继续</button>
+</section>
+
+<section class="step" id="step-2">
+  <div class="eyebrow">WRITE DOWN</div>
+  <h2>写下<br>此刻占据你注意力的东西</h2>
+  <p>
+    不需要整理清楚，也不需要完整。<br>
+    只写你现在最在意的那一部分
+  </p>
+  <textarea id="concernInput" placeholder="在这里写下……"></textarea>
+  <button class="secondary" onclick="showStep(1)">返回</button>
+  <button onclick="saveConcern()">继续</button>
+</section>
+
+<section class="step" id="step-3">
+  <div class="eyebrow">REFLECTION</div>
+  <h2>慢一点，<br>重新感受一下这件事</h2>
+
+  <div class="question-box">
+    <div class="question-main" id="questionMain"></div>
+    <div class="question-sub" id="questionSub"></div>
+  </div>
+
+  <textarea id="answerInput" placeholder="在这里写下……"></textarea>
+  <button class="secondary" onclick="prevQuestion()">上一个</button>
+  <button onclick="nextQuestion()">继续</button>
+</section>
+
+<section class="step" id="step-4">
+  <div class="eyebrow">CASTING</div>
+  <h2>选择起卦方式</h2>
+  <p>你可以使用手中的实体骰子，也可以让系统随机生成。</p>
+
+  <div class="notice">
+    黑色八面骰决定上卦。<br>
+    红色八面骰决定下卦。<br>
+    六面骰决定动爻。
+  </div>
+
+  <button onclick="randomCast()">系统随机生成</button>
+  <button class="secondary" onclick="showStep(5)">我已使用实体骰子</button>
+</section>
+
+<section class="step" id="step-5">
+  <div class="eyebrow">MANUAL CASTING</div>
+  <h2>输入骰子结果</h2>
+
+  <label>黑色八面骰：上卦</label>
+  <select id="manualUpper"></select>
+
+  <label>红色八面骰：下卦</label>
+  <select id="manualLower"></select>
+
+  <label>六面骰：动爻</label>
+  <select id="manualMoving">
+    <option value="1">初爻（最下）</option>
+    <option value="2">二爻</option>
+    <option value="3">三爻</option>
+    <option value="4">四爻</option>
+    <option value="5">五爻</option>
+    <option value="6">上爻（最上）</option>
+  </select>
+
+  <button class="secondary" onclick="showStep(4)">返回</button>
+  <button onclick="manualCast()">查看卦象</button>
+</section>
+
+<section class="step" id="step-6">
+  <div class="eyebrow">RESULT</div>
+  <h2>此刻</h2>
+
+  <div class="hexagram">
+    <div class="hex-lines" id="hexLines"></div>
+    <div class="gua-name" id="guaName"></div>
+    <div class="meta" id="guaMeta"></div>
+  </div>
+
+  <div class="moving-card" id="movingCard"></div>
+
+  <details>
+    <summary>本卦经文</summary>
+    <div class="text-block" id="baseTexts"></div>
+  </details>
+
+  <details open>
+    <summary>动爻爻辞与小象</summary>
+    <div class="text-block" id="movingText"></div>
+  </details>
+
+  <details>
+    <summary>变卦经文</summary>
+    <div class="text-block" id="changedTexts"></div>
+  </details>
+
+  <details>
+    <summary>此刻记录</summary>
+    <div class="text-block" id="recordPreview"></div>
+  </details>
+
+  <button onclick="copyRecord()">复制记录</button>
+  <button class="secondary" onclick="restart()">重新开始</button>
+</section>
+
+</div>
+</main>
+
+<div class="toast" id="toast">已复制</div>
+
+<script>
+const BAGUA = {
+  "乾":[1,1,1],
+  "兑":[1,1,0],
+  "离":[1,0,1],
+  "震":[1,0,0],
+  "巽":[0,1,1],
+  "坎":[0,1,0],
+  "艮":[0,0,1],
+  "坤":[0,0,0]
+};
+
+const BAGUA_LABELS = {
+  "乾":"乾 ☰ 天",
+  "兑":"兑 ☱ 泽",
+  "离":"离 ☲ 火",
+  "震":"震 ☳ 雷",
+  "巽":"巽 ☴ 风",
+  "坎":"坎 ☵ 水",
+  "艮":"艮 ☶ 山",
+  "坤":"坤 ☷ 地"
+};
+
+const EMPTY_TEXT = "内容尚未录入。";
+
+let HEXAGRAM_MAP = {};
+let concern = "";
+let answers = ["","",""];
+let currentQuestion = 0;
+let breathStarted = false;
+let finalRecord = "";
+
+const questions = [
+  {
+    title:"这件事里，\n有没有什么地方，\n其实一直让你不太安心？",
+    sub:"不用急着想清楚。\n先看看，心里最放不下的是哪一部分。"
+  },
+  {
+    title:"你现在更想要的，\n是一个答案，\n还是一种安心的感觉？",
+    sub:"有时候，我们确实需要一个答案。\n\n但也有的时候，\n我们只是太想快点确定下来。"
+  },
+  {
+    title:"有没有什么地方，\n我还没有看清？",
+    sub:"有时候，\n慢下来以后，\n会发现自己原来漏掉了一些东西。"
+  }
+];
+
+async function loadHexagrams() {
+  try {
+    const response = await fetch("hexagrams.json");
+    if (!response.ok) {
+      throw new Error("无法读取 hexagrams.json");
+    }
+
+    const data = await response.json();
+
+    if (Array.isArray(data)) {
+      data.forEach(hex => {
+        if (hex.upper && hex.lower) {
+          HEXAGRAM_MAP[hex.upper + hex.lower] = normalizeHex(hex);
+        }
+      });
+    } else {
+      Object.keys(data).forEach(key => {
+        HEXAGRAM_MAP[key] = normalizeHex(data[key]);
+      });
+    }
+
+    if (Object.keys(HEXAGRAM_MAP).length < 64) {
+      console.warn("hexagrams.json 中卦象数量少于64，请检查数据。");
+    }
+
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").innerText = "进入";
+  } catch (error) {
+    console.error(error);
+    document.getElementById("startBtn").innerText = "数据读取失败";
+    toast("hexagrams.json 读取失败");
+  }
+}
+
+function normalizeHex(hex) {
+  return {
+    id: hex.id || "",
+    name: hex.name || "",
+    upper: hex.upper || "",
+    lower: hex.lower || "",
+    guaCi: hex.guaCi || EMPTY_TEXT,
+    tuan: hex.tuan || EMPTY_TEXT,
+    xiang: hex.xiang || EMPTY_TEXT,
+    xuGua: hex.xuGua || EMPTY_TEXT,
+    zaGua: hex.zaGua || EMPTY_TEXT,
+    yaoCi: {
+      1: hex.yaoCi?.[1] || hex.yaoCi?.["1"] || EMPTY_TEXT,
+      2: hex.yaoCi?.[2] || hex.yaoCi?.["2"] || EMPTY_TEXT,
+      3: hex.yaoCi?.[3] || hex.yaoCi?.["3"] || EMPTY_TEXT,
+      4: hex.yaoCi?.[4] || hex.yaoCi?.["4"] || EMPTY_TEXT,
+      5: hex.yaoCi?.[5] || hex.yaoCi?.["5"] || EMPTY_TEXT,
+      6: hex.yaoCi?.[6] || hex.yaoCi?.["6"] || EMPTY_TEXT
+    },
+    xiaoXiang: {
+      1: hex.xiaoXiang?.[1] || hex.xiaoXiang?.["1"] || EMPTY_TEXT,
+      2: hex.xiaoXiang?.[2] || hex.xiaoXiang?.["2"] || EMPTY_TEXT,
+      3: hex.xiaoXiang?.[3] || hex.xiaoXiang?.["3"] || EMPTY_TEXT,
+      4: hex.xiaoXiang?.[4] || hex.xiaoXiang?.["4"] || EMPTY_TEXT,
+      5: hex.xiaoXiang?.[5] || hex.xiaoXiang?.["5"] || EMPTY_TEXT,
+      6: hex.xiaoXiang?.[6] || hex.xiaoXiang?.["6"] || EMPTY_TEXT
+    }
+  };
+}
+
+function initSelects() {
+  const options = Object.keys(BAGUA).map(k => `<option value="${k}">${BAGUA_LABELS[k]}</option>`).join("");
+  document.getElementById("manualUpper").innerHTML = options;
+  document.getElementById("manualLower").innerHTML = options;
+}
+
+function showStep(n) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.getElementById(`step-${n}`).classList.add("active");
+  if (n === 1 && !breathStarted) startBreath();
+  if (n === 3) renderQuestion();
+}
+
+function startBreath() {
+  breathStarted = true;
+
+  const circle = document.getElementById("breathCircle");
+  const round = document.getElementById("breathRound");
+  const guide = document.getElementById("breathGuide");
+  const progressBar = document.getElementById("breathProgressBar");
+  const btn = document.getElementById("breathNext");
+
+  let cycle = 1;
+  const totalCycles = 3;
+
+  btn.disabled = true;
+  guide.innerText = "4 秒吸气 · 6 秒呼气";
+
+  function resetProgress() {
+    progressBar.classList.remove("inhale", "exhale");
+    progressBar.style.transition = "none";
+    progressBar.style.width = "0%";
+    void progressBar.offsetWidth;
+    progressBar.style.transition = "";
+  }
+
+  function runInhale() {
+    if (cycle > totalCycles) {
+      finishBreath();
+      return;
+    }
+
+    round.innerText = `第 ${cycle} / ${totalCycles} 次`;
+    circle.innerText = "吸气";
+
+    circle.classList.remove("exhale");
+    circle.classList.add("inhale");
+
+    resetProgress();
+    progressBar.classList.add("inhale");
+
+    setTimeout(runExhale, 4000);
+  }
+
+  function runExhale() {
+    circle.innerText = "呼气";
+
+    circle.classList.remove("inhale");
+    circle.classList.add("exhale");
+
+    resetProgress();
+    progressBar.classList.add("exhale");
+
+    setTimeout(() => {
+      cycle++;
+      runInhale();
+    }, 6000);
+  }
+
+  function finishBreath() {
+    circle.innerText = "完成";
+    circle.classList.remove("inhale", "exhale");
+    circle.style.transition = "transform .6s ease, opacity .6s ease";
+    circle.style.transform = "scale(.96)";
+    circle.style.opacity = "1";
+
+    round.innerText = "3 / 3";
+    guide.innerText = "现在可以继续";
+
+    resetProgress();
+    progressBar.style.width = "100%";
+
+    btn.disabled = false;
+  }
+
+  runInhale();
+}
+
+function saveConcern() {
+  concern = document.getElementById("concernInput").value.trim();
+  if (!concern) return toast("请先写下内容");
+  showStep(3);
+}
+
+function renderQuestion() {
+  document.getElementById("questionMain").innerText = questions[currentQuestion].title;
+  document.getElementById("questionSub").innerText = questions[currentQuestion].sub;
+  document.getElementById("answerInput").value = answers[currentQuestion];
+}
+
+function nextQuestion() {
+  const value = document.getElementById("answerInput").value.trim();
+  if (!value) return toast("写一点就可以");
+  answers[currentQuestion] = value;
+
+  if (currentQuestion < 2) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    showStep(4);
+  }
+}
+
+function prevQuestion() {
+  answers[currentQuestion] = document.getElementById("answerInput").value.trim();
+
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  } else {
+    showStep(2);
+  }
+}
+
+function randomBagua() {
+  const keys = Object.keys(BAGUA);
+  return keys[Math.floor(Math.random() * keys.length)];
+}
+
+function randomCast() {
+  renderResult(generateGua({
+    upper:randomBagua(),
+    lower:randomBagua(),
+    movingLine:Math.floor(Math.random() * 6) + 1
+  }));
+}
+
+function manualCast() {
+  renderResult(generateGua({
+    upper:document.getElementById("manualUpper").value,
+    lower:document.getElementById("manualLower").value,
+    movingLine:Number(document.getElementById("manualMoving").value)
+  }));
+}
+
+function generateGua({upper, lower, movingLine}) {
+  const movingIndex = movingLine - 1;
+  const baseLines = [...BAGUA[lower], ...BAGUA[upper]];
+  const changedLines = [...baseLines];
+
+  changedLines[movingIndex] = baseLines[movingIndex] === 1 ? 0 : 1;
+
+  const baseHexagram = HEXAGRAM_MAP[upper + lower];
+  const changedHexagram = getHexagramByLines(changedLines);
+
+  if (!baseHexagram || !changedHexagram) {
+    throw new Error("卦象数据缺失，请检查 hexagrams.json");
+  }
+
+  return {
+    upper,
+    lower,
+    movingLine,
+    movingLineName:getMovingLineName(baseLines, movingIndex),
+    baseLines,
+    changedLines,
+    baseHexagram,
+    changedHexagram
+  };
+}
+
+function getMovingLineName(lines,index) {
+  const yang = ["初九","九二","九三","九四","九五","上九"];
+  const yin = ["初六","六二","六三","六四","六五","上六"];
+  return lines[index] === 1 ? yang[index] : yin[index];
+}
+
+function getHexagramByLines(lines) {
+  const lower = lines.slice(0,3);
+  const upper = lines.slice(3,6);
+
+  const lowerKey = Object.keys(BAGUA).find(k => JSON.stringify(BAGUA[k]) === JSON.stringify(lower));
+  const upperKey = Object.keys(BAGUA).find(k => JSON.stringify(BAGUA[k]) === JSON.stringify(upper));
+
+  return HEXAGRAM_MAP[upperKey + lowerKey];
+}
+
+function drawLines(lines) {
+  const box = document.getElementById("hexLines");
+  box.innerHTML = "";
+
+  lines.slice().reverse().forEach(l => {
+    const div = document.createElement("div");
+    div.className = l === 1 ? "line" : "line broken";
+    box.appendChild(div);
+  });
+}
+
+function renderTexts(hex) {
+  return `卦辞：
+${hex.guaCi}
+
+彖传：
+${hex.tuan}
+
+象传：
+${hex.xiang}
+
+序卦：
+${hex.xuGua}
+
+杂卦：
+${hex.zaGua}`;
+}
+
+function renderResult(r) {
+  const base = r.baseHexagram;
+  const changed = r.changedHexagram;
+  const movingText = base.yaoCi[r.movingLine] || EMPTY_TEXT;
+  const movingXiaoXiang = base.xiaoXiang?.[r.movingLine] || EMPTY_TEXT;
+
+  drawLines(r.baseLines);
+
+  document.getElementById("guaName").innerText = `第${base.id}卦 ${base.name}`;
+  document.getElementById("guaMeta").innerText = `本卦：${BAGUA_LABELS[r.upper]}上｜${BAGUA_LABELS[r.lower]}下`;
+  document.getElementById("movingCard").innerHTML = `
+    <strong>动爻：${r.movingLineName}</strong><br>
+    变卦：第${changed.id}卦 ${changed.name}
+  `;
+
+  document.getElementById("baseTexts").innerText = renderTexts(base);
+  document.getElementById("changedTexts").innerText = renderTexts(changed);
+  document.getElementById("movingText").innerText = `爻辞：
+${movingText}
+
+小象：
+${movingXiaoXiang}`;
+
+  finalRecord = buildRecord(r, movingText,movingXiaoXiang);
+  document.getElementById("recordPreview").innerText = finalRecord;
+
+  showStep(6);
+}
+
+function buildRecord(r, movingText,movingXiaoXiang) {
+  const base = r.baseHexagram;
+  const changed = r.changedHexagram;
+
+  return `【此刻记录】
+
+此刻占据我注意力的事：
+${concern}
+
+让我不太安心的部分：
+${answers[0]}
+
+我现在真正想要的：
+${answers[1]}
+
+还有什么地方，
+是我还没有看清的：
+${answers[2]}
+
+---
+
+【卦象】
+
+本卦：
+第${base.id}卦 ${base.name}
+
+本卦卦辞：
+${base.guaCi}
+
+动爻：
+${r.movingLineName}
+
+动爻爻辞：
+${movingText}
+
+动爻小象：
+${movingXiaoXiang}
+
+变卦：
+第${changed.id}卦 ${changed.name}
+
+变卦卦辞：
+${changed.guaCi}
+
+---
+
+这组卦象更适合被当作一种观察，
+而不是一个确定答案。
+
+请把重点放在当下的情绪、
+矛盾、期待与回避上，
+而不是未来结果的预测。
+
+---
+
+请基于以上内容，
+继续帮助我观察这件事。`;
+}
+
+function copyRecord() {
+  if (!finalRecord) return toast("暂无记录可复制");
+
+  navigator.clipboard.writeText(finalRecord)
+    .then(() => toast("记录已复制"))
+    .catch(() => toast("复制失败，请手动复制"));
+}
+
+function restart() {
+  concern = "";
+  answers = ["","",""];
+  currentQuestion = 0;
+  finalRecord = "";
+  breathStarted = false;
+  document.getElementById("concernInput").value = "";
+  document.getElementById("answerInput").value = "";
+
+  const circle = document.getElementById("breathCircle");
+  const round = document.getElementById("breathRound");
+  const guide = document.getElementById("breathGuide");
+  const progressBar = document.getElementById("breathProgressBar");
+  const btn = document.getElementById("breathNext");
+
+  circle.innerText = "吸气";
+  circle.classList.remove("inhale", "exhale");
+  circle.style.transition = "";
+  circle.style.transform = "";
+  circle.style.opacity = "";
+  round.innerText = "第 1 / 3 次";
+  guide.innerText = "4 秒吸气 · 6 秒呼气";
+  progressBar.classList.remove("inhale", "exhale");
+  progressBar.style.transition = "none";
+  progressBar.style.width = "0%";
+  btn.disabled = true;
+
+  showStep(0);
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1600);
+}
+
+initSelects();
+loadHexagrams();
+</script>
+</body>
+</html>
