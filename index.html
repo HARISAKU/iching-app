@@ -154,6 +154,8 @@ label {
   letter-spacing:.12em;
   transform:scale(.86);
   opacity:.58;
+  cursor:default;
+  user-select:none;
 }
 
 .breath-circle.inhale {
@@ -166,6 +168,18 @@ label {
   transform:scale(.86);
   opacity:.58;
   transition:transform 6s ease-in-out, opacity 6s ease-in-out;
+}
+
+.breath-circle.complete {
+  transform:scale(.98);
+  opacity:1;
+  cursor:pointer;
+  box-shadow:0 0 22px rgba(79,63,45,.16);
+  transition:transform .6s ease, opacity .6s ease, box-shadow .6s ease;
+}
+
+.breath-circle.complete:active {
+  transform:scale(.94);
 }
 
 .breath-info {
@@ -364,8 +378,6 @@ summary {
     <div class="breath-progress-bar" id="breathProgressBar"></div>
   </div>
 
-  <button class="secondary" onclick="showStep(0)">返回</button>
-  <button id="breathNext" onclick="showStep(2)" disabled>继续</button>
 </section>
 
 <section class="step" id="step-2">
@@ -390,8 +402,8 @@ summary {
   </div>
 
   <textarea id="answerInput" placeholder="在这里写下……"></textarea>
-  <button class="secondary" onclick="prevQuestion()">上一个</button>
-  <button onclick="nextQuestion()">继续</button>
+  <button class="secondary" id="prevQuestionBtn" onclick="prevQuestion()">上一个</button>
+  <button id="nextQuestionBtn" onclick="nextQuestion()">继续</button>
 </section>
 
 <section class="step" id="step-4">
@@ -466,7 +478,17 @@ summary {
   </details>
 
   <button onclick="copyRecord()">复制记录</button>
-  <button class="secondary" onclick="restart()">重新开始</button>
+  
+<p style="
+margin-top:14px;
+text-align:center;
+font-size:13px;
+color:var(--muted);
+line-height:1.8;
+">
+复制后，<br>
+可以直接发送给 AI 继续聊下去。
+</p>
 </section>
 
 </div>
@@ -508,16 +530,19 @@ let finalRecord = "";
 
 const questions = [
   {
-    title:"这件事里，\n有没有什么地方，\n其实一直让你不太安心？",
-    sub:"不用急着想清楚。\n先看看，心里最放不下的是哪一部分。"
+    kind:"input",
+    title:"这件事里，\n有什么地方，\n其实一直让你不太安心？",
+    sub:"可能是：害怕失去、害怕做错、害怕来不及、或者有些东西，你一直不愿意往下想。"
   },
   {
-    title:"你现在更想要的，\n是一个答案，\n还是一种安心的感觉？",
-    sub:"有时候，我们确实需要一个答案。\n\n但也有的时候，\n我们只是太想快点确定下来。"
+    kind:"input",
+    title:"如果这件事，\n真的开始发生变化，\n\n你最害怕失去的，\n会是什么？",
+    sub:""
   },
   {
-    title:"有没有什么地方，\n我还没有看清？",
-    sub:"有时候，\n慢下来以后，\n会发现自己原来漏掉了一些东西。"
+    kind:"transition",
+    title:"有时候，\n当一个问题不再只剩下“答案”，\n一些原本看不见的东西，\n会慢慢出现。",
+    sub:"比如：\n真正放不下的、\n真正想靠近的、\n或者其实早就已经知道的。"
   }
 ];
 
@@ -605,12 +630,18 @@ function startBreath() {
   const round = document.getElementById("breathRound");
   const guide = document.getElementById("breathGuide");
   const progressBar = document.getElementById("breathProgressBar");
-  const btn = document.getElementById("breathNext");
 
   let cycle = 1;
   const totalCycles = 3;
+  let activeTimer = null;
 
-  btn.disabled = true;
+  circle.onclick = null;
+  circle.classList.remove("inhale", "exhale", "complete");
+  circle.style.transition = "";
+  circle.style.transform = "";
+  circle.style.opacity = "";
+  circle.innerText = "吸气";
+  round.innerText = `第 ${cycle} / ${totalCycles} 次`;
   guide.innerText = "4 秒吸气 · 6 秒呼气";
 
   function resetProgress() {
@@ -621,6 +652,13 @@ function startBreath() {
     progressBar.style.transition = "";
   }
 
+  function setProgress(mode) {
+    resetProgress();
+    requestAnimationFrame(() => {
+      progressBar.classList.add(mode);
+    });
+  }
+
   function runInhale() {
     if (cycle > totalCycles) {
       finishBreath();
@@ -628,46 +666,42 @@ function startBreath() {
     }
 
     round.innerText = `第 ${cycle} / ${totalCycles} 次`;
+    guide.innerText = "4 秒吸气 · 6 秒呼气";
     circle.innerText = "吸气";
-
-    circle.classList.remove("exhale");
+    circle.classList.remove("exhale", "complete");
     circle.classList.add("inhale");
+    setProgress("inhale");
 
-    resetProgress();
-    progressBar.classList.add("inhale");
-
-    setTimeout(runExhale, 4000);
+    activeTimer = setTimeout(runExhale, 4000);
   }
 
   function runExhale() {
     circle.innerText = "呼气";
-
     circle.classList.remove("inhale");
     circle.classList.add("exhale");
+    setProgress("exhale");
 
-    resetProgress();
-    progressBar.classList.add("exhale");
-
-    setTimeout(() => {
+    activeTimer = setTimeout(() => {
       cycle++;
       runInhale();
     }, 6000);
   }
 
   function finishBreath() {
+    if (activeTimer) clearTimeout(activeTimer);
+
     circle.innerText = "完成";
     circle.classList.remove("inhale", "exhale");
-    circle.style.transition = "transform .6s ease, opacity .6s ease";
-    circle.style.transform = "scale(.96)";
-    circle.style.opacity = "1";
+    circle.classList.add("complete");
 
     round.innerText = "3 / 3";
-    guide.innerText = "现在可以继续";
+    guide.innerText = "4 秒吸气 · 6 秒呼气";
 
-    resetProgress();
+    progressBar.classList.remove("inhale", "exhale");
+    progressBar.style.transition = "none";
     progressBar.style.width = "100%";
 
-    btn.disabled = false;
+    circle.onclick = () => showStep(2);
   }
 
   runInhale();
@@ -680,17 +714,39 @@ function saveConcern() {
 }
 
 function renderQuestion() {
-  document.getElementById("questionMain").innerText = questions[currentQuestion].title;
-  document.getElementById("questionSub").innerText = questions[currentQuestion].sub;
-  document.getElementById("answerInput").value = answers[currentQuestion];
+  const q = questions[currentQuestion];
+  const answerInput = document.getElementById("answerInput");
+  const questionSub = document.getElementById("questionSub");
+  const prevBtn = document.getElementById("prevQuestionBtn");
+  const nextBtn = document.getElementById("nextQuestionBtn");
+
+  document.getElementById("questionMain").innerText = q.title;
+  questionSub.innerText = q.sub || "";
+  questionSub.style.display = q.sub ? "block" : "none";
+
+  if (q.kind === "transition") {
+    answerInput.style.display = "none";
+    answerInput.value = "";
+    prevBtn.style.display = "block";
+    nextBtn.innerText = "让卦象出现";
+  } else {
+    answerInput.style.display = "block";
+    answerInput.value = answers[currentQuestion] || "";
+    prevBtn.style.display = "block";
+    nextBtn.innerText = "继续";
+  }
 }
 
 function nextQuestion() {
-  const value = document.getElementById("answerInput").value.trim();
-  if (!value) return toast("写一点就可以");
-  answers[currentQuestion] = value;
+  const q = questions[currentQuestion];
 
-  if (currentQuestion < 2) {
+  if (q.kind === "input") {
+    const value = document.getElementById("answerInput").value.trim();
+    if (!value) return toast("写一点就可以");
+    answers[currentQuestion] = value;
+  }
+
+  if (currentQuestion < questions.length - 1) {
     currentQuestion++;
     renderQuestion();
   } else {
@@ -699,7 +755,11 @@ function nextQuestion() {
 }
 
 function prevQuestion() {
-  answers[currentQuestion] = document.getElementById("answerInput").value.trim();
+  const q = questions[currentQuestion];
+
+  if (q.kind === "input") {
+    answers[currentQuestion] = document.getElementById("answerInput").value.trim();
+  }
 
   if (currentQuestion > 0) {
     currentQuestion--;
@@ -817,7 +877,7 @@ function renderResult(r) {
 
   document.getElementById("baseTexts").innerText = renderTexts(base);
   document.getElementById("changedTexts").innerText = renderTexts(changed);
-  document.getElementById("movingText").innerText = `爻辞：
+document.getElementById("movingText").innerText = `爻辞：
 ${movingText}
 
 小象：
@@ -841,12 +901,8 @@ ${concern}
 让我不太安心的部分：
 ${answers[0]}
 
-我现在真正想要的：
+我最害怕失去的部分：
 ${answers[1]}
-
-还有什么地方，
-是我还没有看清的：
-${answers[2]}
 
 ---
 
@@ -855,23 +911,57 @@ ${answers[2]}
 本卦：
 第${base.id}卦 ${base.name}
 
-本卦卦辞：
+本卦经文：
+
+卦辞：
 ${base.guaCi}
+
+彖传：
+${base.tuan}
+
+象传：
+${base.xiang}
+
+序卦：
+${base.xuGua}
+
+杂卦：
+${base.zaGua}
+
+---
 
 动爻：
 ${r.movingLineName}
 
-动爻爻辞：
+动爻爻辞与小象：
+
+爻辞：
 ${movingText}
 
-动爻小象：
+小象：
 ${movingXiaoXiang}
+
+---
 
 变卦：
 第${changed.id}卦 ${changed.name}
 
-变卦卦辞：
+变卦经文：
+
+卦辞：
 ${changed.guaCi}
+
+彖传：
+${changed.tuan}
+
+象传：
+${changed.xiang}
+
+序卦：
+${changed.xuGua}
+
+杂卦：
+${changed.zaGua}
 
 ---
 
@@ -909,10 +999,10 @@ function restart() {
   const round = document.getElementById("breathRound");
   const guide = document.getElementById("breathGuide");
   const progressBar = document.getElementById("breathProgressBar");
-  const btn = document.getElementById("breathNext");
 
+  circle.onclick = null;
   circle.innerText = "吸气";
-  circle.classList.remove("inhale", "exhale");
+  circle.classList.remove("inhale", "exhale", "complete");
   circle.style.transition = "";
   circle.style.transform = "";
   circle.style.opacity = "";
@@ -921,7 +1011,6 @@ function restart() {
   progressBar.classList.remove("inhale", "exhale");
   progressBar.style.transition = "none";
   progressBar.style.width = "0%";
-  btn.disabled = true;
 
   showStep(0);
 }
