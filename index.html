@@ -240,6 +240,27 @@ label {
   transition:width 6s linear;
 }
 
+
+.starter-list {
+  margin:8px 0 18px;
+}
+
+.starter-btn {
+  width:100%;
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--line);
+  text-align:left;
+  font-size:14px;
+  line-height:1.6;
+  padding:12px 14px;
+  margin-top:8px;
+}
+
+.starter-btn:active {
+  background:var(--light);
+}
+
 .question-box {
   background:#f4eee5;
   border:1px solid var(--line);
@@ -373,12 +394,27 @@ summary {
 
 <section class="step active" id="step-0">
   <div class="eyebrow">I CHING OBSERVATION</div>
+
+  <div style="
+  text-align:center;
+  color:var(--soft);
+  font-size:26px;
+  letter-spacing:.08em;
+  margin:10px 0 26px;
+  line-height:1;
+">
+  ☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷
+</div>
+
   <div class="home-title">易 · 观此刻</div>
-  <div class="home-line">不问未来，先观此刻。</div>
+
+  <div class="home-line">卦象之外，还有你自己。</div>
+
   <div class="home-copy">
-    当你被一个问题困住，<br>
-    不需要立刻得到答案。
+    以《易经》六十四卦，<br>
+    观察一个问题正在发生的变化。
   </div>
+
   <button id="startBtn" onclick="showStep(1)" disabled>数据读取中...</button>
 </section>
 
@@ -403,17 +439,18 @@ summary {
   <div class="eyebrow">WRITE DOWN</div>
   <h2>写下<br>此刻最困住你的事情</h2>
   <p>
-    不需要整理清楚，也不需要完整。<br>
-   <p>
-也许是一段关系、<br>
-一个决定、<br>
-一次等待、<br>
-一种反复出现的情绪；<br>
-<p>
-或者某件事，<br>
-一直占据着你的注意力。<br>
+    不需要整理清楚。<br>
+    选一个开头，接着写下去就可以。
   </p>
-  <textarea id="concernInput" placeholder="在这里写下……"></textarea>
+
+  <div class="starter-list">
+    <button type="button" class="starter-btn" onclick="insertStarter('最近，我总在反复想……')">最近，我总在反复想……</button>
+    <button type="button" class="starter-btn" onclick="insertStarter('我一直放不下的是……')">我一直放不下的是……</button>
+    <button type="button" class="starter-btn" onclick="insertStarter('如果这件事有一个答案，我最想知道……')">如果这件事有一个答案，我最想知道……</button>
+    <button type="button" class="starter-btn" onclick="insertStarter('真正让我卡住的，可能是……')">真正让我卡住的，可能是……</button>
+  </div>
+
+  <textarea id="concernInput" placeholder="也可以直接写下你自己的问题……"></textarea>
   <button class="secondary" onclick="showStep(1)">返回</button>
   <button onclick="saveConcern()">继续</button>
 </section>
@@ -666,8 +703,8 @@ function startBreath() {
   circle.style.transition = "";
   circle.style.transform = "";
   circle.style.opacity = "";
-  circle.innerText = "吸气";
-  round.innerText = `${cycle} / ${totalCycles}`;
+  circle.innerText = "准备";
+  round.innerText = "";
   guide.innerText = "4 秒吸气 · 6 秒呼气";
   renderBreathDots(0);
 
@@ -680,38 +717,54 @@ function startBreath() {
   }
 
   function startInhaleDots() {
-    let step = 0;
-    renderBreathDots(0);
 
-    if (dotTimer) clearInterval(dotTimer);
+  let filled = 0;
 
-    dotTimer = setInterval(() => {
-      step++;
-      renderBreathDots(step * 3);
+  renderBreathDots(0);
 
-      if (step >= 4) {
-        clearInterval(dotTimer);
-        dotTimer = null;
-      }
-    }, 1000);
-  }
+  if (dotTimer) clearInterval(dotTimer);
+
+  dotTimer = setInterval(() => {
+
+    filled++;
+
+    renderBreathDots(filled);
+
+    if (filled >= 12) {
+
+      clearInterval(dotTimer);
+      dotTimer = null;
+
+    }
+
+  }, 333);
+
+}
 
   function startExhaleDots() {
-    let step = 0;
-    renderBreathDots(12);
 
-    if (dotTimer) clearInterval(dotTimer);
+  let filled = 12;
 
-    dotTimer = setInterval(() => {
-      step++;
-      renderBreathDots(12 - step * 2);
+  renderBreathDots(12);
 
-      if (step >= 6) {
-        clearInterval(dotTimer);
-        dotTimer = null;
-      }
-    }, 1000);
-  }
+  if (dotTimer) clearInterval(dotTimer);
+
+  dotTimer = setInterval(() => {
+
+    filled--;
+
+    renderBreathDots(filled);
+
+    if (filled <= 0) {
+
+      clearInterval(dotTimer);
+      dotTimer = null;
+
+    }
+
+  }, 500);
+
+}
 
   function resetProgress() {
     progressBar.classList.remove("inhale", "exhale");
@@ -727,6 +780,34 @@ function startBreath() {
       progressBar.classList.add(mode);
     });
   }
+
+  function startPrepareCountdown() {
+
+  let count = 3;
+
+  circle.innerText = "准备";
+  round.innerText = "";
+  renderBreathDots(0);
+
+  if (dotTimer) clearInterval(dotTimer);
+
+  dotTimer = setInterval(() => {
+
+    circle.innerText = String(count);
+
+    count--;
+
+    if (count < 0) {
+
+      clearInterval(dotTimer);
+      dotTimer = null;
+      runInhale();
+
+    }
+
+  }, 1000);
+
+}
 
   function runInhale() {
     if (cycle > totalCycles) {
@@ -779,7 +860,20 @@ function startBreath() {
     circle.onclick = () => showStep(2);
   }
 
-  runInhale();
+  startPrepareCountdown();
+}
+
+
+function insertStarter(text) {
+  const input = document.getElementById("concernInput");
+
+  if (!input.value.trim()) {
+    input.value = text;
+  } else {
+    input.value = text + "\n" + input.value.trim();
+  }
+
+  input.focus();
 }
 
 function saveConcern() {
