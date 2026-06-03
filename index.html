@@ -59,38 +59,51 @@ body {
   margin-bottom:22px;
 }
 
+.home-symbol {
+  text-align:center;
+  color:var(--soft);
+  font-size:28px;
+  letter-spacing:.06em;
+  margin:10px 0 28px;
+  line-height:1;
+}
+
 .home-title {
-  font-size:31px;
+  font-size:34px;
   font-weight:500;
   letter-spacing:.08em;
+  line-height:1.35;
   font-family:"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif;
-  margin-bottom:42px;
+  margin-bottom:30px;
 }
 
 .home-line {
-  font-size:17px;
+  font-size:18px;
+  line-height:2;
   color:var(--accent);
-  margin-bottom:36px;
+  font-weight:500;
+  margin-bottom:30px;
 }
 
 .home-copy {
-  font-size:15px;
-  color:var(--muted);
-  line-height:1.9;
-  margin-bottom:54px;
+  font-size:16px;
+  color:var(--soft);
+  line-height:2;
+  margin-bottom:56px;
 }
 
 h2 {
-  font-size:24px;
+  font-size:26px;
   font-weight:500;
-  line-height:1.45;
+  line-height:1.65;
   margin:0 0 20px;
   font-family:"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif;
 }
 
 p {
   color:var(--muted);
-  font-size:15px;
+  font-size:15.5px;
+  line-height:2;
 }
 
 button {
@@ -150,12 +163,14 @@ label {
   align-items:center;
   justify-content:center;
   color:var(--accent);
-  font-size:24px;
+  font-size:20px;
   letter-spacing:.12em;
   transform:scale(.86);
   opacity:.58;
   cursor:default;
   user-select:none;
+  line-height:1.4;
+  text-align:center;
 }
 
 .breath-circle.inhale {
@@ -270,8 +285,8 @@ label {
 }
 
 .question-main {
-  font-size:21px;
-  line-height:1.65;
+  font-size:23px;
+  line-height:1.8;
   font-weight:500;
   color:var(--ink);
   white-space:pre-line;
@@ -279,8 +294,9 @@ label {
 
 .question-sub {
   margin-top:16px;
-  color:var(--muted);
-  font-size:14px;
+  color:var(--soft);
+  font-size:15px;
+  line-height:2;
   white-space:pre-line;
 }
 
@@ -395,24 +411,19 @@ summary {
 <section class="step active" id="step-0">
   <div class="eyebrow">I CHING OBSERVATION</div>
 
-  <div style="
-  text-align:center;
-  color:var(--soft);
-  font-size:26px;
-  letter-spacing:.08em;
-  margin:10px 0 26px;
-  line-height:1;
-">
-  ☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷
-</div>
+  <div class="home-symbol">☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷</div>
 
   <div class="home-title">易 · 观此刻</div>
 
-  <div class="home-line">卦象之外，还有你自己。</div>
+  <div class="home-line">
+    带着那个放不下的问题而来，<br><br>
+    让这一卦，<br>
+    回应此刻的你。
+  </div>
 
   <div class="home-copy">
-    以《易经》六十四卦，<br>
-    观察一个问题正在发生的变化。
+    卦象之外，<br>
+    还有你自己。
   </div>
 
   <button id="startBtn" onclick="showStep(1)" disabled>数据读取中...</button>
@@ -420,13 +431,16 @@ summary {
 
 <section class="step" id="step-1">
   <div class="eyebrow">BREATHING</div>
-  <h2>我们先把速度降下来</h2>
-  <p>跟着这个节奏呼吸三次</p>
+  <h2>先深呼吸三次。</h2>
+  <p>
+    让心意慢慢聚拢，<br>
+    使此刻能够被这一卦看见。
+  </p>
 
   <div class="breath-circle" id="breathCircle">吸气</div>
 
   <div class="breath-info" id="breathRound">1 / 3</div>
-  <div class="breath-guide" id="breathGuide">4 秒吸气 · 6 秒呼气</div>
+  <div class="breath-guide" id="breathGuide"></div>
   <div class="breath-dots" id="breathDots">○○○○○○○○○○○○</div>
 
   <div class="breath-progress">
@@ -436,11 +450,34 @@ summary {
 </section>
 
 <section class="step" id="step-2">
+  <div class="eyebrow">BEFORE ASKING</div>
+  <h2>
+    卦象会回应你带来的问题。<br><br>
+    在起卦之前，<br>
+    先把它写下来。
+  </h2>
+
+  <div class="notice">
+    这里只有你，<br>
+    和这个问题。<br><br>
+    除了你自己，<br>
+    没有人需要知道这些。
+  </div>
+
+  <button class="secondary" onclick="showStep(1)">返回</button>
+  <button onclick="showStep(3)">我准备好了</button>
+</section>
+
+<section class="step" id="step-3">
   <div class="eyebrow">WRITE DOWN</div>
-  <h2>写下<br>此刻最困住你的事情</h2>
+  <h2>
+    写下此刻让你最纠结，<br>
+    最放不下的那件事。
+  </h2>
   <p>
-    不需要整理清楚。<br>
-    选一个开头，接着写下去就可以。
+    不用理清头绪。<br><br>
+    选一个开头，<br>
+    顺着感觉写下去就好。
   </p>
 
   <div class="starter-list">
@@ -451,13 +488,17 @@ summary {
   </div>
 
   <textarea id="concernInput" placeholder="也可以直接写下你自己的问题……"></textarea>
-  <button class="secondary" onclick="showStep(1)">返回</button>
+  <button class="secondary" onclick="showStep(2)">返回</button>
   <button onclick="saveConcern()">继续</button>
 </section>
 
-<section class="step" id="step-3">
+<section class="step" id="step-4">
   <div class="eyebrow">REFLECTION</div>
-  <h2>慢一点，<br>重新感受一下这件事</h2>
+  <h2>
+    卦象正在靠近。<br><br>
+    再近一点，<br>
+    看得更清楚。
+  </h2>
 
   <div class="question-box">
     <div class="question-main" id="questionMain"></div>
@@ -469,7 +510,7 @@ summary {
   <button id="nextQuestionBtn" onclick="nextQuestion()">继续</button>
 </section>
 
-<section class="step" id="step-4">
+<section class="step" id="step-5">
   <div class="eyebrow">CASTING</div>
   <h2>选择起卦方式</h2>
   <p>你可以借助手中的实体骰子，也可以直接交给此刻。</p>
@@ -481,10 +522,10 @@ summary {
   </div>
 
   <button onclick="randomCast()">交给此刻</button>
-  <button class="secondary" onclick="showStep(5)">我已使用实体骰子</button>
+  <button class="secondary" onclick="showStep(6)">我已使用实体骰子</button>
 </section>
 
-<section class="step" id="step-5">
+<section class="step" id="step-6">
   <div class="eyebrow">MANUAL CASTING</div>
   <h2>输入骰子结果</h2>
 
@@ -504,11 +545,11 @@ summary {
     <option value="6">上爻（最上）</option>
   </select>
 
-  <button class="secondary" onclick="showStep(4)">返回</button>
+  <button class="secondary" onclick="showStep(5)">返回</button>
   <button onclick="manualCast()">查看卦象</button>
 </section>
 
-<section class="step" id="step-6">
+<section class="step" id="step-7">
   <div class="eyebrow">RESULT</div>
   <h2>此刻</h2>
 
@@ -681,7 +722,7 @@ function showStep(n) {
   document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
   document.getElementById(`step-${n}`).classList.add("active");
   if (n === 1 && !breathStarted) startBreath();
-  if (n === 3) renderQuestion();
+  if (n === 4) renderQuestion();
 }
 
 function startBreath() {
@@ -705,7 +746,7 @@ function startBreath() {
   circle.style.opacity = "";
   circle.innerText = "准备";
   round.innerText = "";
-  guide.innerText = "4 秒吸气 · 6 秒呼气";
+  guide.innerText = "";
   renderBreathDots(0);
 
   function renderBreathDots(filled) {
@@ -816,7 +857,7 @@ function startBreath() {
     }
 
     round.innerText = `${cycle} / ${totalCycles}`;
-    guide.innerText = "4 秒吸气 · 6 秒呼气";
+    guide.innerText = "";
     circle.innerText = "吸气";
     circle.classList.remove("exhale", "complete");
     circle.classList.add("inhale");
@@ -845,13 +886,13 @@ function startBreath() {
     if (activeTimer) clearTimeout(activeTimer);
     if (dotTimer) clearInterval(dotTimer);
 
-    circle.innerText = "完成";
+    circle.innerHTML = "说说<br>这件事";
     circle.classList.remove("inhale", "exhale");
     circle.classList.add("complete");
 
     round.innerText = `${totalCycles} / ${totalCycles}`;
-    guide.innerText = "4 秒吸气 · 6 秒呼气";
-    renderBreathDots(12);
+    guide.innerText = "";
+    renderBreathDots(0);
 
     progressBar.classList.remove("inhale", "exhale");
     progressBar.style.transition = "none";
@@ -879,7 +920,7 @@ function insertStarter(text) {
 function saveConcern() {
   concern = document.getElementById("concernInput").value.trim();
   if (!concern) return toast("请先写下内容");
-  showStep(3);
+  showStep(4);
 }
 
 function renderQuestion() {
@@ -919,7 +960,7 @@ function nextQuestion() {
     currentQuestion++;
     renderQuestion();
   } else {
-    showStep(4);
+    showStep(5);
   }
 }
 
@@ -934,7 +975,7 @@ function prevQuestion() {
     currentQuestion--;
     renderQuestion();
   } else {
-    showStep(2);
+    showStep(3);
   }
 }
 
@@ -1054,7 +1095,7 @@ ${movingXiaoXiang}`;
 
   finalRecord = buildRecord(r, movingText,movingXiaoXiang);
 
-  showStep(6);
+  showStep(7);
 }
 
 function buildRecord(r, movingText,movingXiaoXiang) {
@@ -1205,7 +1246,7 @@ function restart() {
   circle.style.transform = "";
   circle.style.opacity = "";
   round.innerText = "1 / 3";
-  guide.innerText = "4 秒吸气 · 6 秒呼气";
+  guide.innerText = "";
   const dots = document.getElementById("breathDots");
   if (dots) {
     dots.innerHTML = `<span class="dot-empty">○○○○○○○○○○○○</span>`;
