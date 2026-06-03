@@ -92,6 +92,38 @@ body {
   margin-bottom:56px;
 }
 
+.primary-copy {
+  font-size:18px;
+  line-height:2;
+  color:var(--accent);
+  font-weight:500;
+  margin:0 0 30px;
+}
+
+.secondary-copy {
+  font-size:16px;
+  line-height:2;
+  color:var(--soft);
+  font-weight:400;
+  margin:0 0 28px;
+}
+
+.hint-copy {
+  font-size:15.5px;
+  line-height:2;
+  color:var(--soft);
+  font-weight:400;
+  margin:0 0 18px;
+}
+
+.prompt-copy {
+  font-size:15.5px;
+  line-height:2;
+  color:var(--muted);
+  font-weight:500;
+  white-space:pre-line;
+}
+
 h2 {
   font-size:26px;
   font-weight:500;
@@ -285,17 +317,17 @@ label {
 }
 
 .question-main {
-  font-size:23px;
-  line-height:1.8;
+  font-size:15.5px;
+  line-height:2;
   font-weight:500;
-  color:var(--ink);
+  color:var(--muted);
   white-space:pre-line;
 }
 
 .question-sub {
   margin-top:16px;
   color:var(--soft);
-  font-size:15px;
+  font-size:15.5px;
   line-height:2;
   white-space:pre-line;
 }
@@ -431,11 +463,11 @@ summary {
 
 <section class="step" id="step-1">
   <div class="eyebrow">BREATHING</div>
-  <h2>先深呼吸三次。</h2>
-  <p>
+  <div class="primary-copy">先深呼吸三次。</div>
+  <div class="secondary-copy">
     让心意慢慢聚拢，<br>
     使此刻能够被这一卦看见。
-  </p>
+  </div>
 
   <div class="breath-circle" id="breathCircle">吸气</div>
 
@@ -451,11 +483,11 @@ summary {
 
 <section class="step" id="step-2">
   <div class="eyebrow">BEFORE ASKING</div>
-  <h2>
-    卦象会回应你带来的问题。<br><br>
+  <div class="primary-copy">卦象会回应你带来的问题。</div>
+  <div class="secondary-copy">
     在起卦之前，<br>
     先把它写下来。
-  </h2>
+  </div>
 
   <div class="notice">
     这里只有你，<br>
@@ -470,15 +502,15 @@ summary {
 
 <section class="step" id="step-3">
   <div class="eyebrow">WRITE DOWN</div>
-  <h2>
+  <div class="primary-copy">
     写下此刻让你最纠结，<br>
     最放不下的那件事。
-  </h2>
-  <p>
-    不用理清头绪。<br><br>
+  </div>
+  <div class="hint-copy">
+    不用理清头绪，<br>
     选一个开头，<br>
     顺着感觉写下去就好。
-  </p>
+  </div>
 
   <div class="starter-list">
     <button type="button" class="starter-btn" onclick="insertStarter('最近，我总在反复想……')">最近，我总在反复想……</button>
@@ -494,11 +526,11 @@ summary {
 
 <section class="step" id="step-4">
   <div class="eyebrow">REFLECTION</div>
-  <h2>
-    卦象正在靠近。<br><br>
+  <div class="primary-copy">卦象正在靠近。</div>
+  <div class="secondary-copy">
     再近一点，<br>
     看得更清楚。
-  </h2>
+  </div>
 
   <div class="question-box">
     <div class="question-main" id="questionMain"></div>
@@ -512,8 +544,8 @@ summary {
 
 <section class="step" id="step-5">
   <div class="eyebrow">CASTING</div>
-  <h2>选择起卦方式</h2>
-  <p>你可以借助手中的实体骰子，也可以直接交给此刻。</p>
+  <div class="primary-copy">选择起卦方式</div>
+  <div class="secondary-copy">你可以借助手中的实体骰子，也可以直接交给此刻。</div>
 
   <div class="notice">
     黑色八面骰决定上卦。<br>
