@@ -459,6 +459,68 @@ summary {
   </div>
 
   <button id="startBtn" onclick="showStep(1)" disabled>数据读取中...</button>
+
+  <div style="
+    margin-top:26px;
+    text-align:center;
+  ">
+    <div style="
+      font-size:13px;
+      color:var(--soft);
+      margin-bottom:8px;
+    ">
+      第一次使用？
+    </div>
+
+    <button
+      class="secondary"
+      style="
+        width:auto;
+        padding:10px 22px;
+        margin:0 auto;
+      "
+      onclick="showStep('flow')">
+      查看仪式流程
+    </button>
+  </div>
+</section>
+
+
+<section class="step" id="step-flow">
+  <div class="eyebrow">RITUAL FLOW</div>
+
+  <div class="primary-copy">
+    这是一场围绕一个问题展开的起卦仪式。
+  </div>
+
+  <div class="secondary-copy">
+    你将经历：<br><br>
+
+    ① 聚焦问题<br><br>
+
+    ② 三次呼吸<br><br>
+
+    ③ 回答几个简单问题<br><br>
+
+    ④ 起属于此刻的一卦<br><br>
+
+    ⑤ 查看卦象回应<br><br>
+
+    ⑥ 复制记录，与常用AI继续对话
+  </div>
+
+  <div class="notice">
+    <strong>关于隐私</strong><br><br>
+
+    🔒 你的内容仅保存在当前设备中。<br><br>
+
+    不会上传服务器。<br><br>
+
+    开发者无法查看你的问题。
+  </div>
+
+  <button class="secondary" onclick="showStep(0)">返回</button>
+  <button onclick="showStep(1)">开始仪式</button>
 </section>
 
 <section class="step" id="step-1">
@@ -506,6 +568,18 @@ summary {
     写下此刻让你最纠结，<br>
     最放不下的那件事。
   </div>
+
+  <div class="notice" style="
+  margin:18px 0 22px;
+  text-align:left;
+  background:#f4eee5;
+">
+  🔒 这些内容只属于你。<br><br>
+
+  它们仅保存在当前设备中，<br>
+  不会上传服务器。
+</div>
+
   <div class="hint-copy">
     不用理清头绪，<br>
     选一个开头，<br>
@@ -752,7 +826,14 @@ function initSelects() {
 
 function showStep(n) {
   document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+
+  if (typeof n === "string") {
+    document.getElementById(`step-${n}`).classList.add("active");
+    return;
+  }
+
   document.getElementById(`step-${n}`).classList.add("active");
+
   if (n === 1 && !breathStarted) startBreath();
   if (n === 4) renderQuestion();
 }
@@ -1206,47 +1287,72 @@ ${changed.zaGua}
 
 ---
 
-请先基于本卦、动爻与变卦，
-谈谈这件事目前呈现出的状态、
-正在发生的变化，
-以及未来一段时间可能出现的倾向。
-可以判断这件事目前更像是在靠近、
-停滞、转折、消耗、等待、
-修复、分离、打开或重新调整之中。
+请先以本卦、动爻与变卦为主要依据进行解读。
 
-直接开始说明即可，
-不要使用小标题。
+整体比例请控制为：
+卦象解读与趋势判断约60%、
+情绪与自我观察约40%。
 
-可以说出倾向、
-阻力、
-时机感和需要注意的地方，
+请重点说明：
+本卦显示这件事当前处在什么状态；
+动爻指出变化发生在哪里；
+变卦显示后续可能走向哪里。
 
-但不要给出绝对结论，
-不要给出确定日期，
-不要说“必然会发生”，
-也不要替我做决定。
+可以给出趋势判断，
+包括更像靠近还是远离、
+推进还是停滞、
+打开还是消耗、
+修复还是分离。
 
----
+也可以给出大致时间感，
+例如“短期内”“还需要等待”“近期会有变化”“不是马上发生”，
+但不要给出确定日期，
+不要说必然发生，
+不要把话说死。
 
-除了事情本身的发展方向，
+如果问题涉及“会不会”，
+可以给出倾向判断，
+但请说明这个判断来自卦象中的哪些信息。
 
-也请把更多注意力放在：
+如果卦象本身已经给出了较明确的方向，
+请直接说出来，
+不必为了保持中立而回避判断。
 
-我当下的情绪、
-真正害怕失去的部分、
+在卦象解读之后，
+再结合我写下的内容，
+帮助我观察：
+我当下真正害怕的部分、
 期待、
 矛盾、
 回避，
+以及这件事为什么会如此牵动我。
 
-以及这件事正在提醒我看见什么。
+不要只围绕我的问答内容发挥。
+请让解释首先像一次卦象回应，
+其次才是一次自我观察。
+表达时请像一位真正读卦的人在回应。
+让人感觉卦正在回应他的问题。
+不要提及：
+“按照你的要求”
+“从卦象角度看”
+“根据你提供的信息”
+“接下来分析”
+“我会重点说明”
 
-不要只讨论未来会发生什么，
-也请帮助我理解：
 
-为什么这件事会如此牵动我。
+不要让人感觉在执行提示词。
 
-请让解释既有卦象的回应感，
-也能帮助我更看清自己。`;
+
+请直接进入卦意。
+
+像是在面对面回应来问卦的人。
+
+语气自然、笃定、克制。
+
+可以说出倾向。
+
+但不要把话说死。
+`;
 }
 
 function copyRecord() {
