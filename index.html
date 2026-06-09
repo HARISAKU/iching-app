@@ -308,6 +308,90 @@ label {
   background:var(--light);
 }
 
+
+.category-list {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:8px 0 22px;
+}
+
+.category-btn {
+  width:100%;
+  background:#fffaf2;
+  color:var(--accent);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px 12px;
+  margin:0;
+  text-align:left;
+}
+
+.category-btn.active {
+  background:var(--light);
+  border-color:var(--accent);
+}
+
+.category-title {
+  display:block;
+  font-size:24px;
+  line-height:1.2;
+  font-family:"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif;
+  margin-bottom:8px;
+}
+
+.category-desc {
+  display:block;
+  font-size:12.5px;
+  line-height:1.6;
+  color:var(--muted);
+}
+
+.intent-list {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:6px 0 24px;
+}
+
+.intent-btn {
+  width:100%;
+  background:#fffaf2;
+  color:var(--accent);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:12px 16px;
+  margin:0;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.intent-btn.active {
+  background:var(--light);
+  border-color:var(--accent);
+}
+
+.intent-mark {
+  font-size:16px;
+  line-height:1;
+  color:var(--accent);
+}
+
+.intent-title {
+  font-size:16px;
+  font-weight:500;
+  color:var(--accent);
+  white-space:nowrap;
+}
+
+.intent-desc {
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.4;
+}
+
 .question-box {
   background:#f4eee5;
   border:1px solid var(--line);
@@ -448,7 +532,7 @@ summary {
   <div class="home-title">易 · 观此刻</div>
 
   <div class="home-line">
-    带着那个放不下的问题而来，<br><br>
+    带着那个问题而来，<br><br>
     让这一卦，<br>
     回应此刻的你。
   </div>
@@ -500,7 +584,7 @@ summary {
 
     ② 三次呼吸<br><br>
 
-    ③ 回答几个简单问题<br><br>
+    ③ 选择所问类别<br><br>
 
     ④ 起属于此刻的一卦<br><br>
 
@@ -547,55 +631,139 @@ summary {
   <div class="eyebrow">BEFORE ASKING</div>
   <div class="primary-copy">卦象会回应你带来的问题。</div>
   <div class="secondary-copy">
-    在起卦之前，<br>
-    先把它写下来。
+    此刻所问，<br>
+    更接近哪一种？
   </div>
 
-  <div class="notice">
-    这里只有你，<br>
-    和这个问题。<br><br>
-    除了你自己，<br>
-    没有人需要知道这些。
+  <div class="intent-list">
+    <button type="button" class="intent-btn" onclick="selectIntent('问事','看事情', this)">
+      <span class="intent-mark">○</span>
+      <span class="intent-title">问事</span>
+      <span class="intent-desc">看事情</span>
+    </button>
+    <button type="button" class="intent-btn" onclick="selectIntent('问心','看自己', this)">
+      <span class="intent-mark">○</span>
+      <span class="intent-title">问心</span>
+      <span class="intent-desc">看自己</span>
+    </button>
+  </div>
+
+  <div class="secondary-copy" style="margin-bottom:18px;">
+    更接近哪一类？
+  </div>
+
+  <div class="category-list">
+    <button type="button" class="category-btn" onclick="selectCategory('缘','感情 · 婚姻 · 人际', this)">
+      <span class="category-title">缘</span>
+      <span class="category-desc">感情 · 婚姻 · 人际</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('业','事业 · 工作 · 创业', this)">
+      <span class="category-title">业</span>
+      <span class="category-desc">事业 · 工作 · 创业</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('学','学业 · 考试 · 成长', this)">
+      <span class="category-title">学</span>
+      <span class="category-desc">学业 · 考试 · 成长</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('财','收入 · 投资 · 生意', this)">
+      <span class="category-title">财</span>
+      <span class="category-desc">收入 · 投资 · 生意</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('身','健康 · 家宅 · 身心', this)">
+      <span class="category-title">身</span>
+      <span class="category-desc">健康 · 家宅 · 身心</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('行','远行 · 迁移 · 出国', this)">
+      <span class="category-title">行</span>
+      <span class="category-desc">远行 · 迁移 · 出国</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('择','选择 · 进退 · 转变', this)">
+      <span class="category-title">择</span>
+      <span class="category-desc">选择 · 进退 · 转变</span>
+    </button>
+    <button type="button" class="category-btn" onclick="selectCategory('运','机缘 · 时运 · 难以归类之事', this)">
+      <span class="category-title">运</span>
+      <span class="category-desc">机缘 · 时运 · 难以归类之事</span>
+    </button>
   </div>
 
   <button class="secondary" onclick="showStep(1)">返回</button>
-  <button onclick="showStep(3)">我准备好了</button>
+  <button onclick="continueToCasting()">起卦</button>
+  <button class="secondary" onclick="goOptionalInput()">向这一卦多说一些（可选）</button>
 </section>
 
 <section class="step" id="step-3">
-  <div class="eyebrow">WRITE DOWN</div>
+  <div class="eyebrow">OPTIONAL NOTE</div>
   <div class="primary-copy">
-    写下此刻让你最纠结，<br>
-    最放不下的那件事。
+    向这一卦，<br>
+    多说一些。
   </div>
 
-  <div class="notice" style="
-  margin:18px 0 22px;
-  text-align:left;
-  background:#f4eee5;
-">
-  🔒 这些内容只属于你。<br><br>
+  <div class="notice">
+    <strong>关于隐私</strong><br><br>
 
-  它们仅保存在当前设备中，<br>
-  不会上传服务器。
-</div>
+    🔒 你的内容仅保存在当前设备中。<br><br>
 
-  <div class="hint-copy">
-    不用理清头绪，<br>
-    选一个开头，<br>
-    顺着感觉写下去就好。
+    不会上传服务器。<br><br>
+
+    开发者无法查看你的问题。
   </div>
 
-  <div class="starter-list">
-    <button type="button" class="starter-btn" onclick="insertStarter('最近，我总在反复想……')">最近，我总在反复想……</button>
-    <button type="button" class="starter-btn" onclick="insertStarter('我一直放不下的是……')">我一直放不下的是……</button>
-    <button type="button" class="starter-btn" onclick="insertStarter('如果这件事有一个答案，我最想知道……')">如果这件事有一个答案，我最想知道……</button>
-    <button type="button" class="starter-btn" onclick="insertStarter('真正让我卡住的，可能是……')">真正让我卡住的，可能是……</button>
+  <div class="hint-copy" style="
+    line-height:1.85;
+    margin-bottom:14px;
+  ">
+    不用理清头绪。<br>
+    可以顺着这条线索往下想。<br><br>
+
+    最近我一直在想……<br>
+    ↓<br>
+    这件事让我放不下的地方……<br>
+    ↓<br>
+    如果事情开始发生变化……<br>
+    ↓<br>
+    我真正希望看到……
   </div>
 
-  <textarea id="concernInput" placeholder="也可以直接写下你自己的问题……"></textarea>
+  <textarea id="concernInput" placeholder="写到哪里都可以，不必全部回答。"></textarea>
   <button class="secondary" onclick="showStep(2)">返回</button>
-  <button onclick="saveConcern()">继续</button>
+  <button onclick="saveConcern()">继续起卦</button>
+</section>
+
+<section class="step" id="step-8">
+  <div class="eyebrow">OPTIONAL NOTE</div>
+  <div class="primary-copy">
+    向这一卦，<br>
+    说明此事。
+  </div>
+
+  <div class="notice">
+    <strong>关于隐私</strong><br><br>
+
+    🔒 你的内容仅保存在当前设备中。<br><br>
+
+    不会上传服务器。<br><br>
+
+    开发者无法查看你的问题。
+  </div>
+
+  <div class="hint-copy" style="
+    line-height:1.85;
+    margin-bottom:14px;
+  ">
+    不用写得很详细。<br>
+    把事情简单说清楚就可以。<br><br>
+
+    例如：<br>
+    我明天有一场比赛……<br>
+    我准备搬家……<br>
+    我即将开始新的工作……<br>
+    我计划去一个陌生的地方……
+  </div>
+
+  <textarea id="eventInput" placeholder="简单写下所问之事……"></textarea>
+  <button class="secondary" onclick="showStep(2)">返回</button>
+  <button onclick="saveEventConcern()">继续起卦</button>
 </section>
 
 <section class="step" id="step-4">
@@ -635,6 +803,16 @@ summary {
   <div class="eyebrow">MANUAL CASTING</div>
   <h2>输入骰子结果</h2>
 
+  <div class="notice">
+    心里想着那件事。<br>
+    缓缓吸气，再慢慢吐气。<br><br>
+
+    当气息吐尽，<br>
+    身体将要再次吸气的那一刻，<br><br>
+
+    掷出骰子。
+  </div>
+
   <label>黑色八面骰：上卦</label>
   <select id="manualUpper"></select>
 
@@ -643,12 +821,12 @@ summary {
 
   <label>六面骰：动爻</label>
   <select id="manualMoving">
-    <option value="1">初爻（最下）</option>
-    <option value="2">二爻</option>
-    <option value="3">三爻</option>
-    <option value="4">四爻</option>
-    <option value="5">五爻</option>
-    <option value="6">上爻（最上）</option>
+    <option value="1">初</option>
+    <option value="2">二</option>
+    <option value="3">三</option>
+    <option value="4">四</option>
+    <option value="5">五</option>
+    <option value="6">上</option>
   </select>
 
   <button class="secondary" onclick="showStep(5)">返回</button>
@@ -731,6 +909,10 @@ const EMPTY_TEXT = "内容尚未录入。";
 
 let HEXAGRAM_MAP = {};
 let concern = "";
+let selectedIntent = "";
+let selectedIntentDesc = "";
+let selectedCategory = "";
+let selectedCategoryDesc = "";
 let answers = ["","",""];
 let currentQuestion = 0;
 let breathStarted = false;
@@ -819,7 +1001,7 @@ function normalizeHex(hex) {
 }
 
 function initSelects() {
-  const options = Object.keys(BAGUA).map(k => `<option value="${k}">${BAGUA_LABELS[k]}</option>`).join("");
+  const options = Object.keys(BAGUA).map(k => `<option value="${k}">${k}</option>`).join("");
   document.getElementById("manualUpper").innerHTML = options;
   document.getElementById("manualLower").innerHTML = options;
 }
@@ -999,7 +1181,7 @@ function startBreath() {
     if (activeTimer) clearTimeout(activeTimer);
     if (dotTimer) clearInterval(dotTimer);
 
-    circle.innerHTML = "说说<br>这件事";
+    circle.innerHTML = "选择<br>所问";
     circle.classList.remove("inhale", "exhale");
     circle.classList.add("complete");
 
@@ -1018,6 +1200,55 @@ function startBreath() {
 }
 
 
+
+function selectIntent(name, desc, buttonEl) {
+  selectedIntent = name;
+  selectedIntentDesc = desc;
+
+  document
+    .querySelectorAll(".intent-btn")
+    .forEach(btn => {
+      btn.classList.remove("active");
+      const mark = btn.querySelector(".intent-mark");
+      if (mark) mark.innerText = "○";
+    });
+
+  if (buttonEl) {
+    buttonEl.classList.add("active");
+    const mark = buttonEl.querySelector(".intent-mark");
+    if (mark) mark.innerText = "●";
+  }
+}
+
+function selectCategory(name, desc, buttonEl) {
+  selectedCategory = name;
+  selectedCategoryDesc = desc;
+
+  document
+    .querySelectorAll(".category-btn")
+    .forEach(btn => btn.classList.remove("active"));
+
+  if (buttonEl) {
+    buttonEl.classList.add("active");
+  }
+}
+
+function continueToCasting() {
+  if (!selectedIntent) return toast("请先选择问事或问心");
+  if (!selectedCategory) return toast("请先选择一类");
+  showStep(5);
+}
+
+function goOptionalInput() {
+  if (!selectedIntent) return toast("请先选择问事或问心");
+  if (!selectedCategory) return toast("请先选择一类");
+  if (selectedIntent === "问事") {
+    showStep(8);
+  } else {
+    showStep(3);
+  }
+}
+
 function insertStarter(text) {
   const input = document.getElementById("concernInput");
 
@@ -1032,8 +1263,12 @@ function insertStarter(text) {
 
 function saveConcern() {
   concern = document.getElementById("concernInput").value.trim();
-  if (!concern) return toast("请先写下内容");
-  showStep(4);
+  showStep(5);
+}
+
+function saveEventConcern() {
+  concern = document.getElementById("eventInput").value.trim();
+  showStep(5);
 }
 
 function renderQuestion() {
@@ -1215,16 +1450,20 @@ function buildRecord(r, movingText,movingXiaoXiang) {
   const base = r.baseHexagram;
   const changed = r.changedHexagram;
 
+  const concernText = concern
+    ? `
+
+此事经过：
+${concern}`
+    : "";
+
   return `【此刻记录】
 
-此刻占据我注意力的事：
-${concern}
+所问方式：
+${selectedIntent}（${selectedIntentDesc}）
 
-让我不太安心的部分：
-${answers[0]}
-
-我最害怕失去的部分：
-${answers[1]}
+所问类别：
+${selectedCategory}（${selectedCategoryDesc}）${concernText}
 
 ---
 
@@ -1287,71 +1526,179 @@ ${changed.zaGua}
 
 ---
 
-请先以本卦、动爻与变卦为主要依据进行解读。
+请先以本卦、动爻与变卦为主要依据进行回应。
+请先阅读【所问方式】与【所问类别】。
 
-整体比例请控制为：
-卦象解读与趋势判断约60%、
-情绪与自我观察约40%。
+【问事】与【问心】是不同类型的问题，请根据所问方式决定回应重点。
 
-请重点说明：
-本卦显示这件事当前处在什么状态；
-动爻指出变化发生在哪里；
-变卦显示后续可能走向哪里。
+请先以本卦、动爻与变卦为主要依据进行回应。
 
-可以给出趋势判断，
-包括更像靠近还是远离、
-推进还是停滞、
-打开还是消耗、
-修复还是分离。
+卦象始终是回应的主体。
 
-也可以给出大致时间感，
-例如“短期内”“还需要等待”“近期会有变化”“不是马上发生”，
-但不要给出确定日期，
-不要说必然发生，
-不要把话说死。
+所问方式、类别与补充内容，只用于帮助理解问卦者此刻所处的位置，不应取代卦意本身。
 
-如果问题涉及“会不会”，
-可以给出倾向判断，
-但请说明这个判断来自卦象中的哪些信息。
+优先关注：
 
-如果卦象本身已经给出了较明确的方向，
-请直接说出来，
-不必为了保持中立而回避判断。
+* 本卦显示这件事当前处在什么状态；
+* 动爻指出变化发生在哪里；
+* 变卦显示后续可能走向哪里；
+* 卦中显现出的阻力、机会、转折与趋势。
 
-在卦象解读之后，
-再结合我写下的内容，
-帮助我观察：
-我当下真正害怕的部分、
-期待、
-矛盾、
-回避，
-以及这件事为什么会如此牵动我。
+可以判断：
 
-不要只围绕我的问答内容发挥。
-请让解释首先像一次卦象回应，
-其次才是一次自我观察。
-表达时请像一位真正读卦的人在回应。
-让人感觉卦正在回应他的问题。
-不要提及：
+* 更像靠近还是远离；
+* 推进还是停滞；
+* 打开还是消耗；
+* 修复还是分离；
+* 顺势还是逆势。
+
+如果卦象已经给出明显倾向，可以直接指出，不必为了保持中立而刻意模糊。
+
+但不要把事情说成必然发生。
+
+可以描述时间感，例如：
+
+* 短期内；
+* 近期会有变化；
+* 还需要等待；
+* 不是马上发生；
+* 正处于酝酿阶段。
+
+不要给出具体日期。
+
+如果问题涉及“会不会”，可以给出倾向判断，并说明这种倾向来自卦中的哪些信息。
+
+如果用户选择了类别，请优先在该类别对应的语境中理解卦意：
+
+缘：感情、婚姻、人际
+
+业：事业、工作、创业
+
+学：学业、考试、成长
+
+财：收入、投资、生意
+
+身：健康、家宅、身心
+
+行：远行、迁移、出国
+
+择：选择、进退、转变
+
+运：机缘、时运、难以归类之事
+
+如果所问方式是【问事】：
+
+请重点回应事情本身。
+
+重点包括：
+
+* 事情正在往哪里发展；
+* 哪些地方顺势；
+* 哪些地方逆势；
+* 目前最需要注意什么；
+* 容易出现的阻力或变数；
+* 可以把握的机会；
+* 哪些行为容易让结果变差；
+* 哪些做法更有利于顺势而行。
+
+如果问题涉及比赛、考试、旅行、面试、商务洽谈、出行、搬家、项目推进等具体事件，请尽量给出具体可执行的提醒。
+
+例如：
+
+* 节奏快慢；
+* 进退时机；
+* 人际配合；
+* 风险点；
+* 容易忽略的地方；
+* 应该保守还是主动；
+* 应该等待还是推进。
+
+问事模式下，不要把重点转移到心理分析。
+
+除非卦象明确体现，否则不要重点讨论：
+
+* 真正害怕什么；
+* 放不下什么；
+* 内心矛盾是什么；
+* 为什么被这件事牵动。
+
+这类内容最多不超过整体内容的10%。
+
+如果所问方式是【问心】：
+
+请在卦象回应之后，适度观察问卦者自身。
+
+重点不是单纯预测事情，而是理解这件事为什么牵动他。
+
+可以观察：
+
+* 真正放不下的部分；
+* 期待与顾虑；
+* 进退之间的矛盾；
+* 回避或不愿面对的地方；
+* 这件事正在提醒他看见什么。
+
+问心模式下，卦象解读仍然是主体。
+
+自我观察部分根据补充内容多少自动调整：
+
+* 没有补充内容，或补充内容极少：以卦象解读为主，自我观察不超过10%；
+* 补充内容较短：自我观察约10%～20%；
+* 补充内容较完整：自我观察可增加，但最多不超过40%。
+
+无论问事还是问心：
+
+如果补充内容不足以支持判断，请保持克制。
+
+不要为了完成分析而虚构心理活动。
+
+宁可少说，也不要硬猜。
+
+表达风格要求：
+
+不要写成教程。
+
+不要写成心理咨询报告。
+
+不要写成学术论文。
+
+不要使用：
+
 “按照你的要求”
+
 “从卦象角度看”
+
 “根据你提供的信息”
+
 “接下来分析”
+
 “我会重点说明”
 
+“综合来看”
 
-不要让人感觉在执行提示词。
+直接进入卦意。
 
+语气自然、克制、笃定。
 
-请直接进入卦意。
+像一个长期读卦的人正在回应问卦者。
 
-像是在面对面回应来问卦的人。
+可以体现分析能力和判断力。
 
-语气自然、笃定、克制。
+让人感觉这是建立在大量卦理与经验基础上的判断。
 
-可以说出倾向。
+不要刻意神秘。
 
-但不要把话说死。
+不要刻意煽情。
+
+不要故意制造玄虚。
+
+保持清晰、准确、有方向感。
+
+让人感觉：
+
+这支卦正在回应他的问题。
+
+而不是AI正在执行提示词。
 `;
 }
 
@@ -1365,12 +1712,24 @@ function copyRecord() {
 
 function restart() {
   concern = "";
+  selectedIntent = "";
+  selectedIntentDesc = "";
+  selectedCategory = "";
+  selectedCategoryDesc = "";
   answers = ["","",""];
   currentQuestion = 0;
   finalRecord = "";
   breathStarted = false;
   document.getElementById("concernInput").value = "";
+  const eventInput = document.getElementById("eventInput");
+  if (eventInput) eventInput.value = "";
   document.getElementById("answerInput").value = "";
+  document.querySelectorAll(".intent-btn").forEach(btn => {
+    btn.classList.remove("active");
+    const mark = btn.querySelector(".intent-mark");
+    if (mark) mark.innerText = "○";
+  });
+  document.querySelectorAll(".category-btn").forEach(btn => btn.classList.remove("active"));
 
   const circle = document.getElementById("breathCircle");
   const round = document.getElementById("breathRound");
