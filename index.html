@@ -1394,9 +1394,9 @@ function confirmDiceInput() {
   const movingLabel = movingSelect.options[movingSelect.selectedIndex].text;
 
   document.getElementById("confirmDice").innerText =
-    `黑色八面骰（上卦）：${BAGUA_LABELS[upper]}\n` +
-    `红色八面骰（下卦）：${BAGUA_LABELS[lower]}\n` +
-    `六面骰（动爻）：${movingLabel}爻`;
+    `黑色八面骰（上卦）：${upper}\n` +
+    `红色八面骰（下卦）：${lower}\n` +
+    `六面骰（动爻）：${movingLabel}`;
 
   showStep(9);
 }
