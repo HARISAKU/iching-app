@@ -502,6 +502,21 @@ summary {
   margin-top:12px;
 }
 
+.skip-test-btn {
+  display:block;
+  width:auto;
+  margin:34px 0 0 auto;
+  padding:4px 12px;
+  background:none;
+  border:1px dashed var(--line);
+  border-radius:6px;
+  color:var(--soft);
+  font-size:11px;
+  letter-spacing:.05em;
+  opacity:.55;
+  cursor:pointer;
+}
+
 .toast {
   position:fixed;
   left:50%;
@@ -624,6 +639,8 @@ summary {
   <div class="breath-progress">
     <div class="breath-progress-bar" id="breathProgressBar"></div>
   </div>
+
+  <button type="button" class="skip-test-btn" onclick="skipBreath()">跳过（仅供测试用）</button>
 
 </section>
 
@@ -795,8 +812,8 @@ summary {
     六面骰决定动爻。
   </div>
 
-  <button onclick="randomCast()">交给此刻</button>
-  <button class="secondary" onclick="showStep(6)">我已使用实体骰子</button>
+  <button onclick="showStep(6)">我已使用实体骰子</button>
+  <button class="secondary" onclick="randomCast()">交给此刻</button>
 </section>
 
 <section class="step" id="step-6">
@@ -830,7 +847,24 @@ summary {
   </select>
 
   <button class="secondary" onclick="showStep(5)">返回</button>
-  <button onclick="manualCast()">查看卦象</button>
+  <button onclick="confirmDiceInput()">下一步：确认结果</button>
+</section>
+
+<section class="step" id="step-9">
+  <div class="eyebrow">CONFIRM</div>
+  <h2>确认骰子结果</h2>
+
+  <div class="secondary-copy">
+    请核对你掷出的结果，<br>
+    确认无误后再查看卦象。
+  </div>
+
+  <div class="question-box">
+    <div class="question-main" id="confirmDice"></div>
+  </div>
+
+  <button class="secondary" onclick="showStep(6)">返回修改</button>
+  <button onclick="manualCast()">确认无误，查看卦象</button>
 </section>
 
 <section class="step" id="step-7">
@@ -916,6 +950,7 @@ let selectedCategoryDesc = "";
 let answers = ["","",""];
 let currentQuestion = 0;
 let breathStarted = false;
+let breathCleanup = null;
 let finalRecord = "";
 
 const questions = [
@@ -1033,6 +1068,13 @@ function startBreath() {
   const totalCycles = 3;
   let activeTimer = null;
   let dotTimer = null;
+
+  breathCleanup = () => {
+    if (activeTimer) clearTimeout(activeTimer);
+    if (dotTimer) clearInterval(dotTimer);
+    activeTimer = null;
+    dotTimer = null;
+  };
 
   circle.onclick = null;
   circle.classList.remove("inhale", "exhale", "complete");
@@ -1201,6 +1243,11 @@ function startBreath() {
 
 
 
+function skipBreath() {
+  if (breathCleanup) breathCleanup();
+  showStep(2);
+}
+
 function selectIntent(name, desc, buttonEl) {
   selectedIntent = name;
   selectedIntentDesc = desc;
@@ -1338,6 +1385,20 @@ function randomCast() {
     lower:randomBagua(),
     movingLine:Math.floor(Math.random() * 6) + 1
   }));
+}
+
+function confirmDiceInput() {
+  const upper = document.getElementById("manualUpper").value;
+  const lower = document.getElementById("manualLower").value;
+  const movingSelect = document.getElementById("manualMoving");
+  const movingLabel = movingSelect.options[movingSelect.selectedIndex].text;
+
+  document.getElementById("confirmDice").innerText =
+    `黑色八面骰（上卦）：${BAGUA_LABELS[upper]}\n` +
+    `红色八面骰（下卦）：${BAGUA_LABELS[lower]}\n` +
+    `六面骰（动爻）：${movingLabel}爻`;
+
+  showStep(9);
 }
 
 function manualCast() {
