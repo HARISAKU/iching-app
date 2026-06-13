@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>易 · 观此刻</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +59,7 @@ body {
   background:var(--card);
   border:1px solid var(--line);
   border-radius:2px;
-  padding:36px 26px 32px;
+  padding:28px 18px 28px;
   min-height:82vh;
   box-shadow:
     2px 2px 0 #C8BAA2,
@@ -112,22 +112,25 @@ body {
 .home-symbol {
   text-align:center;
   color:var(--line);
-  font-size:22px;
-  letter-spacing:.18em;
-  margin:8px 0 32px;
-  line-height:1;
+  font-size:clamp(12px, 4vw, 20px);
+  letter-spacing:.08em;
+  margin:8px 0 28px;
+  line-height:1.6;
   font-family:var(--f-sans);
+  white-space:nowrap;
+  overflow:hidden;
 }
 
 .home-title {
-  font-size:36px;
+  font-size:clamp(28px, 8vw, 38px);
   font-weight:400;
   letter-spacing:.2em;
   line-height:1.4;
-  font-family:"Noto Serif SC","Hiragino Mincho ProN","Yu Mincho",serif;
+  font-family:var(--f-serif);
   margin-bottom:32px;
   color:var(--ink);
   position:relative;
+  white-space:nowrap;
 }
 /* 印章感红点缀在标题旁 */
 .home-title::after {
