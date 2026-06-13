@@ -712,6 +712,25 @@ details[open] summary::before { content:"－"; }
 }
 
 /* ── Toast ── */
+.cast-line {
+  width:140px;
+  height:5px;
+  background:var(--gold, #C8A84B);
+  position:relative;
+}
+.cast-line.broken {
+  background:none;
+  display:flex;
+  justify-content:space-between;
+}
+.cast-line.broken::before,
+.cast-line.broken::after {
+  content:"";
+  width:54px;
+  height:5px;
+  background:var(--gold, #C8A84B);
+}
+
 .toast {
   position:fixed;
   left:50%;
@@ -1473,11 +1492,56 @@ function randomBagua() {
 }
 
 function randomCast() {
-  renderResult(generateGua({
+  const result = generateGua({
     upper:randomBagua(),
     lower:randomBagua(),
     movingLine:Math.floor(Math.random() * 6) + 1
-  }));
+  });
+
+  const linePattern = Array.from({length:6}, () => Math.random() > .5 ? 1 : 0);
+  const overlay = document.getElementById('castingOverlay');
+
+  // 如果找不到overlay（预览环境限制），直接跳到结果
+  if (!overlay) {
+    renderResult(result);
+    return;
+  }
+
+  const text = document.getElementById('castingText');
+  const glow = document.getElementById('castingGlow');
+
+  // 重置爻线状态
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('cl' + i);
+    if (!el) continue;
+    el.className = 'cast-line' + (linePattern[i-1] === 0 ? ' broken' : '');
+    el.style.opacity = '0';
+  }
+  if (text) text.style.opacity = '0';
+  if (glow) glow.style.opacity = '0';
+
+  overlay.style.display = 'flex';
+
+  // 爻线逐一浮现（从第一爻到第六爻）
+  const delays = [200, 520, 840, 1160, 1480, 1800];
+  for (let i = 1; i <= 6; i++) {
+    setTimeout(() => {
+      const el = document.getElementById('cl' + i);
+      if (el) el.style.opacity = '1';
+    }, delays[i-1]);
+  }
+
+  // 文字和光晕
+  setTimeout(() => {
+    if (text) text.style.opacity = '1';
+    if (glow) glow.style.opacity = '1';
+  }, 2200);
+
+  // 进入结果页
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    renderResult(result);
+  }, 3600);
 }
 
 function confirmDiceInput() {
