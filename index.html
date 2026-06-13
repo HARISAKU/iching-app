@@ -715,20 +715,38 @@ details[open] summary::before { content:"－"; }
 .cast-line {
   width:140px;
   height:5px;
-  background:var(--gold, #C8A84B);
   position:relative;
+  overflow:hidden;
 }
-.cast-line.broken {
-  background:none;
-  display:flex;
-  justify-content:space-between;
-}
-.cast-line.broken::before,
-.cast-line.broken::after {
+
+/* 左段：从左边缘向右生长，初始占46% */
+.cast-line::before {
   content:"";
-  width:54px;
+  position:absolute;
+  left:0; top:0;
   height:5px;
-  background:var(--gold, #C8A84B);
+  width:46%;
+  background:#C8A84B;
+  transition:width .55s cubic-bezier(.4,0,.2,1);
+}
+
+/* 右段：从右边缘向左生长，初始占46% */
+.cast-line::after {
+  content:"";
+  position:absolute;
+  right:0; top:0;
+  height:5px;
+  width:46%;
+  background:#C8A84B;
+  transition:width .55s cubic-bezier(.4,0,.2,1);
+}
+
+/* 阳爻：两段各延伸到50%，在中间合拢 */
+.cast-line.yang::before {
+  width:50%;
+}
+.cast-line.yang::after {
+  width:50%;
 }
 
 .toast {
@@ -1112,6 +1130,45 @@ line-height:1.9;
 
 </div>
 </main>
+
+<div id="castingOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0D0B08;
+  z-index:9999;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px;">
+    <div class="cast-line" id="cl6" style="opacity:0;transition:opacity .4s ease;"></div>
+    <div class="cast-line" id="cl5" style="opacity:0;transition:opacity .4s ease;"></div>
+    <div class="cast-line" id="cl4" style="opacity:0;transition:opacity .4s ease;"></div>
+    <div class="cast-line" id="cl3" style="opacity:0;transition:opacity .4s ease;"></div>
+    <div class="cast-line" id="cl2" style="opacity:0;transition:opacity .4s ease;"></div>
+    <div class="cast-line" id="cl1" style="opacity:0;transition:opacity .4s ease;"></div>
+  </div>
+  <div id="castingText" style="
+    color:#6B5C40;
+    font-size:13px;
+    letter-spacing:.28em;
+    font-family:'Hiragino Sans','Noto Sans SC',sans-serif;
+    opacity:0;
+    transition:opacity 1s ease;
+    text-align:center;
+  ">卦象正在成形</div>
+  <div id="castingGlow" style="
+    position:absolute;
+    width:240px;
+    height:240px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(200,168,75,.08) 0%, transparent 70%);
+    pointer-events:none;
+    opacity:0;
+    transition:opacity 1.5s ease;
+  "></div>
+</div>
 
 <div class="toast" id="toast">已复制</div>
 
@@ -1498,7 +1555,6 @@ function randomCast() {
     movingLine:Math.floor(Math.random() * 6) + 1
   });
 
-  const linePattern = Array.from({length:6}, () => Math.random() > .5 ? 1 : 0);
   const overlay = document.getElementById('castingOverlay');
 
   // 如果找不到overlay（预览环境限制），直接跳到结果
@@ -1514,7 +1570,7 @@ function randomCast() {
   for (let i = 1; i <= 6; i++) {
     const el = document.getElementById('cl' + i);
     if (!el) continue;
-    el.className = 'cast-line' + (linePattern[i-1] === 0 ? ' broken' : '');
+    el.className = 'cast-line';
     el.style.opacity = '0';
   }
   if (text) text.style.opacity = '0';
@@ -1522,26 +1578,41 @@ function randomCast() {
 
   overlay.style.display = 'flex';
 
-  // 爻线逐一浮现（从第一爻到第六爻）
-  const delays = [200, 520, 840, 1160, 1480, 1800];
+  // 爻线逐一浮现，先断后连（阴→阳）
+  // 每条线：出现(opacity) → 延迟 → 连接成阳爻
+  const lineDelay = 480;   // 每条线间隔
+  const connectDelay = 320; // 出现后多久连接
+
   for (let i = 1; i <= 6; i++) {
+    const appearAt = (i - 1) * lineDelay + 300;
+    const connectAt = appearAt + connectDelay;
+
     setTimeout(() => {
       const el = document.getElementById('cl' + i);
-      if (el) el.style.opacity = '1';
-    }, delays[i-1]);
+      if (!el) return;
+      el.classList.remove('yang');
+      el.style.opacity = '1';
+    }, appearAt);
+
+    setTimeout(() => {
+      const el = document.getElementById('cl' + i);
+      if (!el) return;
+      el.classList.add('yang');
+    }, connectAt);
   }
 
-  // 文字和光晕
+  // 文字和光晕在最后一条连接后出现
+  const allConnected = 5 * lineDelay + 300 + connectDelay + 200;
   setTimeout(() => {
     if (text) text.style.opacity = '1';
     if (glow) glow.style.opacity = '1';
-  }, 2200);
+  }, allConnected);
 
   // 进入结果页
   setTimeout(() => {
     overlay.style.display = 'none';
     renderResult(result);
-  }, 3600);
+  }, 5000);
 }
 
 function confirmDiceInput() {
