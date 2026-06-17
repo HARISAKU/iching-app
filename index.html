@@ -748,7 +748,17 @@ details[open] summary::before { content:"－"; }
   height:5px;
   position:relative;
   overflow:hidden;
+  transform-origin: center center;
+  will-change: transform, opacity;
 }
+
+/* 漩涡收缩动画 */
+@keyframes swirlIn0 { to { transform: rotate(   0deg) translateX(  0px) scale(0); opacity:0; } }
+@keyframes swirlIn1 { to { transform: rotate(  60deg) translateX(-12px) scale(0); opacity:0; } }
+@keyframes swirlIn2 { to { transform: rotate( 120deg) translateX(-18px) scale(0); opacity:0; } }
+@keyframes swirlIn3 { to { transform: rotate( 180deg) translateX(-14px) scale(0); opacity:0; } }
+@keyframes swirlIn4 { to { transform: rotate( 240deg) translateX( -8px) scale(0); opacity:0; } }
+@keyframes swirlIn5 { to { transform: rotate( 300deg) translateX(  4px) scale(0); opacity:0; } }
 
 /* 左段：从左边缘向右生长，初始占46% */
 .cast-line::before {
@@ -1404,7 +1414,7 @@ line-height:1.9;
     opacity:0;
     transition:opacity 1s ease;
     text-align:center;
-  ">卦象正在成形</div>
+  "></div>
   <div id="castingGlow" style="
     position:absolute;
     width:240px;
@@ -1887,6 +1897,8 @@ function randomCast() {
     if (!el) continue;
     el.className = 'cast-line';
     el.style.opacity = '0';
+    el.style.animation = '';
+    el.style.transform = '';
   }
   if (text) text.style.opacity = '0';
   if (glow) glow.style.opacity = '0';
@@ -1894,12 +1906,11 @@ function randomCast() {
   overlay.style.display = 'flex';
 
   // 爻线逐一浮现，先断后连（阴→阳）
-  // 每条线：出现(opacity) → 延迟 → 连接成阳爻
-  const lineDelay = 480;   // 每条线间隔
-  const connectDelay = 320; // 出现后多久连接
+  const lineDelay  = 480;
+  const connectDelay = 320;
 
   for (let i = 1; i <= 6; i++) {
-    const appearAt = (i - 1) * lineDelay + 300;
+    const appearAt  = (i - 1) * lineDelay + 300;
     const connectAt = appearAt + connectDelay;
 
     setTimeout(() => {
@@ -1916,18 +1927,43 @@ function randomCast() {
     }, connectAt);
   }
 
-  // 文字和光晕在最后一条连接后出现
-  const allConnected = 5 * lineDelay + 300 + connectDelay + 200;
-  setTimeout(() => {
-    if (text) text.style.opacity = '1';
-    if (glow) glow.style.opacity = '1';
-  }, allConnected);
+  // 六根爻线全部连接完成后，执行漩涡顺时针收缩
+  const allConnected = 5 * lineDelay + 300 + connectDelay;
 
-  // 进入结果页
+  // 短暂停顿，让用户看清完整卦象
+  const swirlStart = allConnected + 600;
+
   setTimeout(() => {
-    overlay.style.display = 'none';
-    renderResult(result);
-  }, 5000);
+    // 六根线各自以不同角度顺时针旋转缩小至中心
+    // 线序：cl6在上（第1根），cl1在下（第6根）
+    const lines  = ['cl6','cl5','cl4','cl3','cl2','cl1'];
+    const anims  = ['swirlIn0','swirlIn1','swirlIn2','swirlIn3','swirlIn4','swirlIn5'];
+    const dur    = 900;   // 收缩总时长
+
+    lines.forEach((id, idx) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // 错开 0–120ms 让线条不同时收缩，更有漩涡感
+      const delay = idx * 20;
+      el.style.animation = `${anims[idx]} ${dur}ms cubic-bezier(.4,0,.8,1) ${delay}ms forwards`;
+    });
+
+    // 收缩完成后隐藏overlay，衔接过渡动画
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      // 重置动画状态
+      lines.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.animation = '';
+        el.style.opacity   = '0';
+        el.style.transform = '';
+      });
+      // 接入与"确认无误，查看卦象"相同的过渡动画
+      playGuaTransition(() => renderResult(result));
+    }, dur + 150);
+
+  }, swirlStart);
 }
 
 function confirmDiceInput() {
@@ -2726,66 +2762,103 @@ loadHexagrams();
   bResize();
   window.addEventListener('resize', bResize);
 
-  /* 颜色池：朱红 → 金橙 → 亮白 */
+  /* 颜色池：纸灰为底，朱红与金色作为余烬点缀 */
   const COLORS = [
-    [184, 40,  32],   // 朱红  #B82820
-    [210, 60,  40],   // 深红
-    [230, 100, 30],   // 橙红
-    [255, 160, 40],   // 金橙  #FFA028
-    [255, 210, 80],   // 金黄  #FFD250
-    [255, 240, 180],  // 亮金
+    [ 38,  32,  28],  // 深炭黑
+    [ 62,  52,  46],  // 炭灰
+    [ 90,  80,  70],  // 中灰褐
+    [122, 110,  96],  // 浅灰褐
+    [150, 138, 120],  // 纸灰
+    [172, 158, 138],  // 亮纸灰
+    [148,  32,  22],  // 朱红余烬
+    [180,  50,  28],  // 明朱
+    [160,  88,  18],  // 暗金褐
+    [200, 140,  35],  // 金橙
+    [220, 175,  60],  // 亮金
   ];
 
-  /* 伪随机偏转：用简单 sin 叠加模拟自然曲线 */
+  /* 圆半径常量（breath-circle直径156px，半径78px） */
+  const CIRCLE_R = 78;
+
+  /* 微风噪声：低频柔和 */
   function noiseDrift(t, seed){
-    return Math.sin(t * 2.1 + seed) * 0.6
-         + Math.sin(t * 3.7 + seed * 1.3) * 0.3
-         + Math.sin(t * 7.2 + seed * 0.7) * 0.12;
+    return Math.sin(t * 1.1 + seed) * 0.5
+         + Math.sin(t * 2.6 + seed * 1.4) * 0.22
+         + Math.sin(t * 5.8 + seed * 0.6) * 0.08;
   }
 
-  /* 单粒子 */
-  function BStar(cx, cy){
-    const angle  = Math.random() * Math.PI * 2;
-    const speed  = 0.8 + Math.random() * 2.8;          // 初速
-    const accel  = 0.012 + Math.random() * 0.025;       // 加速度（向外越来越快）
-    const col    = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const seed   = Math.random() * 100;
-    this.x      = cx + (Math.random() - 0.5) * 20;
-    this.y      = cy + (Math.random() - 0.5) * 20;
-    this.angle  = angle;
-    this.speed  = speed;
-    this.accel  = accel;
-    this.col    = col;
-    this.seed   = seed;
-    this.r      = 1.0 + Math.random() * 3.0;
-    this.life   = 1.0;
-    /* 距中心越近衰减越慢，让近处粒子保持更长 */
-    this.decay  = 0.008 + Math.random() * 0.014;
-    this.t      = 0;                                     // 个人时间轴（用于曲线偏转）
-    this.dist   = 0;                                     // 已行进距离（控制透明度渐变）
-    this.cx     = cx;
-    this.cy     = cy;
-    this.glow   = Math.random() > 0.35;
+  /* 单粒子：灰烬飘散 */
+  /* spawnRing: 是否从圆边缘生成（true=沿圆周，false=圆内随机） */
+  function BStar(cx, cy, spawnRing){
+    let sx, sy, baseAngle;
+
+    if(spawnRing){
+      /* 沿呼吸圆圆周生成，略向外扩散 */
+      const edgeA = Math.random() * Math.PI * 2;
+      const edgeR = CIRCLE_R * (0.85 + Math.random() * 0.4); // 85%~125%半径
+      sx = cx + Math.cos(edgeA) * edgeR;
+      sy = cy + Math.sin(edgeA) * edgeR;
+      /* 初始方向：从圆心向外 + 轻微随机偏转 */
+      baseAngle = edgeA + (Math.random() - 0.5) * 0.6;
+    } else {
+      /* 圆内随机，模拟中心区域爆发 */
+      const ia = Math.random() * Math.PI * 2;
+      const ir = Math.random() * CIRCLE_R * 0.6;
+      sx = cx + Math.cos(ia) * ir;
+      sy = cy + Math.sin(ia) * ir;
+      baseAngle = Math.random() * Math.PI * 2;
+    }
+
+    /* 距圆心越近，初速越大（惊吓逃逸：中心最猛，边缘较慢） */
+    const distFromCenter = Math.sqrt((sx-cx)**2 + (sy-cy)**2);
+    const proximity = Math.max(0, 1 - distFromCenter / CIRCLE_R); // 1=圆心 0=圆边
+    const burstBoost = proximity * 3.5;  // 圆心附近最多额外+3.5
+    const speed = 1.2 + burstBoost + Math.random() * 1.8;
+    /* 加速度也随距离放大：越近越有爆发感 */
+    const accel = 0.04 + proximity * 0.12 + Math.random() * 0.04;
+    const col   = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const seed  = Math.random() * 100;
+
+    this.x        = sx;
+    this.y        = sy;
+    this.angle    = baseAngle;
+    this.speed    = speed;
+    this.accel    = accel;
+    /* 加速度随逃逸距离衰减：逃出去后恢复飘散节奏 */
+    this.accelDecay = 0.94 + Math.random() * 0.03;
+    this.col      = col;
+    this.seed     = seed;
+    this.r        = 0.4 + Math.random() * 1.3;
+    this.life     = 1.0;
+    this.decay    = 0.004 + Math.random() * 0.006;
+    this.t        = Math.random() * 20;
+    this.dist     = 0;
+    this.cx       = cx;
+    this.cy       = cy;
+    this.glow     = Math.random() > 0.72;
+    this.rise     = 0.05 + Math.random() * 0.18;
+    this.windX    = (Math.random() - 0.3) * 0.18;
   }
 
   BStar.prototype.update = function(){
-    this.t += 0.06;
-    this.speed += this.accel;                            // 向外加速
+    this.t += 0.022;
+    /* 加速度逐帧衰减，逃出后自然减速变为飘散 */
+    this.accel *= this.accelDecay;
+    this.speed += this.accel;
 
-    /* 主方向 + 曲线偏转 */
-    const drift = noiseDrift(this.t, this.seed) * 0.08; // 偏转角（弧度）
+    const drift = noiseDrift(this.t, this.seed) * 0.055;
     this.angle += drift;
 
-    this.x += Math.cos(this.angle) * this.speed;
-    this.y += Math.sin(this.angle) * this.speed;
-    /* 距中心距离决定透明度：越远越淡 */
+    const windDecay = Math.max(0, 1 - this.dist / 300);
+    this.x += Math.cos(this.angle) * this.speed + this.windX * (1 + windDecay * 1.5);
+    this.y += Math.sin(this.angle) * this.speed - this.rise;
+
     const dx = this.x - this.cx;
     const dy = this.y - this.cy;
     this.dist = Math.sqrt(dx*dx + dy*dy);
     this.life -= this.decay;
 
-    /* 超出屏幕边界直接消亡 */
-    if(this.x < 0 || this.x > bsc.width || this.y < 0 || this.y > bsc.height){
+    if(this.x < -40 || this.x > bsc.width+40 || this.y < -120 || this.y > bsc.height+40){
       this.life = 0;
     }
   };
@@ -2793,24 +2866,28 @@ loadHexagrams();
   BStar.prototype.draw = function(){
     if(this.life <= 0) return;
 
-    /* 透明度：life × 距离衰减（距中心越远越透明） */
-    const distFade = Math.max(0, 1 - this.dist / 380);
-    const alpha    = Math.max(0, this.life * distFade);
-    if(alpha < 0.01) return;
+    /* 扩散范围加大：到600px才完全消失 */
+    const distFade = Math.max(0, 1 - this.dist / 600);
+    const alpha    = Math.max(0, this.life * distFade * 0.78);
+    if(alpha < 0.008) return;
 
-    /* 颜色：随距离从深→浅（朱红→金→亮白） */
     const [r,g,b] = this.col;
-    /* 向亮白渐变 */
     const fade = 1 - distFade;
-    const fr   = Math.min(255, r + fade * (255 - r));
-    const fg   = Math.min(255, g + fade * (255 - g));
-    const fb   = Math.min(255, b + fade * (255 - b));
+    /* 朱红/金色粒子向灰褪，灰色粒子向浅灰褪，保持层次感 */
+    const lift = fade * 22;
+    const fr = Math.min(215, r + lift);
+    const fg = Math.min(200, g + lift * 0.8);
+    const fb = Math.min(182, b + lift * 0.6);
 
     bctx.save();
     bctx.globalAlpha = alpha;
     if(this.glow){
-      bctx.shadowColor = `rgba(${r},${Math.round(g*0.5)},0,0.9)`;
-      bctx.shadowBlur  = 6 + this.r * 2;
+      /* 朱红余温或金色余光 */
+      const isWarm = r > 120;
+      bctx.shadowColor = isWarm
+        ? `rgba(${r},${Math.round(g*0.4)},0,0.4)`
+        : `rgba(100,80,50,0.25)`;
+      bctx.shadowBlur  = isWarm ? 4 : 2;
     }
     bctx.fillStyle = `rgb(${Math.round(fr)},${Math.round(fg)},${Math.round(fb)})`;
     bctx.beginPath();
@@ -2833,18 +2910,18 @@ loadHexagrams();
     bParticles = [];
     cancelAnimationFrame(bRaf);
 
-    /* 第一波：点击瞬间爆发 60 颗 */
-    for(let i = 0; i < 60; i++){
-      bParticles.push(new BStar(cx, cy));
-    }
+    /* 第一波：沿圆周爆发40颗 + 圆内20颗，模拟触碰扰动 */
+    for(let i = 0; i < 40; i++) bParticles.push(new BStar(cx, cy, true));
+    for(let i = 0; i < 20; i++) bParticles.push(new BStar(cx, cy, false));
 
-    /* 持续补充：前 600ms 每 30ms 补 8 颗，营造"涌出"感 */
+    /* 持续补充：1000ms内每40ms补6颗（沿圆周），余烬持续飘散 */
     let emitCount = 0;
     bEmitTimer = setInterval(() => {
-      for(let i = 0; i < 8; i++) bParticles.push(new BStar(cx, cy));
+      for(let i = 0; i < 4; i++) bParticles.push(new BStar(cx, cy, true));
+      for(let i = 0; i < 2; i++) bParticles.push(new BStar(cx, cy, false));
       emitCount++;
-      if(emitCount >= 20) clearInterval(bEmitTimer); // 600ms 后停止补充
-    }, 30);
+      if(emitCount >= 25) clearInterval(bEmitTimer);
+    }, 40);
 
     bRaf = requestAnimationFrame(bTick);
   };
@@ -2877,12 +2954,12 @@ loadHexagrams();
   const BG = { r:237, g:227, b:208 };
 
   const COLORS = [
-    [184, 40,  32],
-    [210, 55,  35],
-    [225, 90,  28],
-    [255, 150, 35],
-    [255, 200, 70],
-    [255, 235, 160],
+    [100, 22,  18],   // 深朱红，暗沉
+    [130, 35,  22],
+    [155, 60,  18],
+    [175, 100, 25],
+    [185, 140, 45],
+    [200, 170, 90],   // 最亮也只是淡金，不刺眼
   ];
 
   function resize(){
@@ -2935,10 +3012,12 @@ loadHexagrams();
   };
 
   Particle.prototype.draw = function(){
-    const x = CX + Math.cos(this.theta) * this.rr;
-    const y = CY + Math.sin(this.theta) * this.rr;
+    /* rr很小时直接吸附到中心点，避免因theta旋转导致的游走 */
+    const snap = Math.min(1, this.rr / 18);
+    const x = CX + Math.cos(this.theta) * this.rr * snap;
+    const y = CY + Math.sin(this.theta) * this.rr * snap;
     const prox = Math.max(0, 1 - this.rr / (Math.max(W,H)*0.65));
-    const a = this.alpha * (0.18 + prox*0.82);
+    const a = this.alpha * (0.10 + prox*0.52);
     if(a < 0.015) return;
 
     const [r,g,b] = this.col;
@@ -2948,9 +3027,9 @@ loadHexagrams();
 
     ctx.save();
     ctx.globalAlpha = a;
-    if(this.glow && prox > 0.2){
-      ctx.shadowColor = `rgba(${r},${Math.round(g*0.4)},0,0.9)`;
-      ctx.shadowBlur  = 4 + prox*14;
+    if(this.glow && prox > 0.3){
+      ctx.shadowColor = `rgba(${r},${Math.round(g*0.35)},0,0.45)`;
+      ctx.shadowBlur  = 2 + prox*7;
     }
     ctx.fillStyle = `rgb(${Math.round(fr)},${Math.round(fg)},${Math.round(fb)})`;
     ctx.beginPath();
@@ -2980,10 +3059,10 @@ loadHexagrams();
 
       /* 单层：径向渐变晕染，无描边环 */
       const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, r);
-      grad.addColorStop(0,    `rgba(184,40,32,${fade * 0.55})`);
-      grad.addColorStop(0.4,  `rgba(184,40,32,${fade * 0.30})`);
-      grad.addColorStop(0.75, `rgba(184,40,32,${fade * 0.10})`);
-      grad.addColorStop(1,    `rgba(184,40,32,0)`);
+      grad.addColorStop(0,    `rgba(160,35,28,${fade * 0.38})`);
+      grad.addColorStop(0.4,  `rgba(160,35,28,${fade * 0.18})`);
+      grad.addColorStop(0.75, `rgba(160,35,28,${fade * 0.06})`);
+      grad.addColorStop(1,    `rgba(160,35,28,0)`);
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       ctx.fillStyle = grad;
@@ -2996,12 +3075,13 @@ loadHexagrams();
 
   /* 时序
      0       ms : 开始
-     0–700   ms : 粒子从边缘生成
-     1800    ms : 第一道涟漪
-     2200    ms : 第二道涟漪
-     2600    ms : 第三道涟漪
-     3000    ms : 开始点亮（800ms渐变）
-     3800    ms : 跳转
+     0–800   ms : 粒子从边缘陆续生成
+     800–3000ms : 粒子旋转漩涡向中心汇聚
+     3000    ms : 第一道涟漪（粒子已聚拢中心）
+     3400    ms : 第二道涟漪
+     3800    ms : 第三道涟漪
+     4200    ms : 开始点亮（800ms渐变至页面背景色）
+     5000    ms : 跳转
   */
   let ripplesSpawned = 0;
 
@@ -3014,15 +3094,15 @@ loadHexagrams();
 
     particles.forEach(p => { p.update(dt); p.draw(); });
 
-    if(elapsed >= 1800 && ripplesSpawned === 0){ spawnRipple(now); ripplesSpawned = 1; }
-    if(elapsed >= 2200 && ripplesSpawned === 1){ spawnRipple(now); ripplesSpawned = 2; }
-    if(elapsed >= 2600 && ripplesSpawned === 2){ spawnRipple(now); ripplesSpawned = 3; }
+    if(elapsed >= 3000 && ripplesSpawned === 0){ spawnRipple(now); ripplesSpawned = 1; }
+    if(elapsed >= 3400 && ripplesSpawned === 1){ spawnRipple(now); ripplesSpawned = 2; }
+    if(elapsed >= 3800 && ripplesSpawned === 2){ spawnRipple(now); ripplesSpawned = 3; }
 
     drawRipples(now);
 
-    /* 点亮：3000ms开始，800ms渐变至页面背景色 */
-    if(elapsed >= 3000){
-      const t = Math.min(1, (elapsed - 3000) / 800);
+    /* 点亮：4200ms开始，800ms渐变至页面背景色 */
+    if(elapsed >= 4200){
+      const t = Math.min(1, (elapsed - 4200) / 800);
       /* ease-in-out */
       const te = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
       const r = Math.round(BG.r * te);
@@ -3032,8 +3112,8 @@ loadHexagrams();
       ctx.fillRect(0,0,W,H);
     }
 
-    /* 跳转：3800ms */
-    if(elapsed >= 3800 && onDone){
+    /* 跳转：5000ms */
+    if(elapsed >= 5000 && onDone){
       const cb = onDone; onDone = null;
       cb();
 
@@ -3071,9 +3151,9 @@ loadHexagrams();
     ctx.fillStyle = '#000';
     ctx.fillRect(0,0,W,H);
 
-    /* 200颗粒子，0–700ms内陆续生成 */
+    /* 200颗粒子，0–800ms内陆续生成 */
     for(let i = 0; i < 200; i++){
-      setTimeout(() => particles.push(new Particle()), i * 3.5);
+      setTimeout(() => particles.push(new Particle()), i * 4.0);
     }
 
     cancelAnimationFrame(raf);
