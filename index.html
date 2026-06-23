@@ -730,18 +730,23 @@ details[open] summary::before { content:"－"; }
 /* ── 测试跳过按钮 ── */
 .skip-test-btn {
   display:block;
-  width:auto;
-  margin:32px 0 0 auto;
-  padding:3px 10px;
-  background:none;
-  border:1px dashed var(--line);
-  border-radius:0;
-  color:var(--line);
-  font-size:10px;
-  letter-spacing:.08em;
-  font-family:var(--f-sans);
-  opacity:.6;
+  width:100%;
+  margin:28px 0 0;
+  padding:11px 16px;
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:1px;
+  color:var(--soft);
+  font-size:13px;
+  letter-spacing:.1em;
+  font-family:var(--f-serif);
   cursor:pointer;
+  transition:color .2s, border-color .2s;
+}
+.skip-test-btn:hover {
+  color:var(--muted);
+  border-color:var(--muted);
+  background:transparent;
 }
 
 /* ── Toast ── */
@@ -1212,7 +1217,7 @@ body.lang-zh h2 {
     <div class="breath-progress-bar" id="breathProgressBar"></div>
   </div>
 
-  <button type="button" class="skip-test-btn" onclick="skipBreath()" data-i18n="breath_skip">スキップ（テスト用）</button>
+  <button type="button" class="skip-test-btn" onclick="skipBreath()" data-i18n="breath_skip">心が整いました</button>
 
 </section>
 
@@ -1356,12 +1361,7 @@ body.lang-zh h2 {
   <h2 data-i18n="dice_h2">サイコロの結果を入力</h2>
 
   <div class="notice">
-    <span data-i18n="dice_notice">その問いを心に思い浮かべながら。<br>ゆっくり息を吸い、ゆっくりと吐きます。<br><br>息を吐き切り、<br>次の息を吸う、その瞬間に——<br><br>サイコロを投げます。</span><br><br>
-
-    息を吐き切り、<br>
-次の息を吸う、その瞬間に——<br><br>
-
-    サイコロを投げます。
+    <span data-i18n="dice_notice">その問いを心に思い浮かべながら。<br>ゆっくり息を吸い、ゆっくりと吐きます。<br><br>息を吐き切り、<br>次の息を吸う、その瞬間に——<br><br>サイコロを投げます。</span>
   </div>
 
   <label data-i18n="dice_upper_label">黒い八面体サイコロ：上卦</label>
@@ -1847,7 +1847,32 @@ function startBreath() {
 
 function skipBreath() {
   if (breathCleanup) breathCleanup();
-  showStep(2);
+
+  const circle = document.getElementById("breathCircle");
+  const round  = document.getElementById("breathRound");
+  const guide  = document.getElementById("breathGuide");
+  const dots   = document.getElementById("breathDots");
+  const pb     = document.getElementById("breathProgressBar");
+
+  /* 圆圈溶解动效 */
+  circle.classList.remove("inhale","exhale","complete");
+  circle.classList.add("dissolving");
+
+  /* 星粒子从圆圈中心爆发 */
+  const cr = circle.getBoundingClientRect();
+  spawnBreathStars(cr.left + cr.width * 0.5, cr.top + cr.height * 0.5);
+
+  /* 辅助元素淡出 */
+  [round, guide, dots, pb ? pb.parentElement : null].forEach(el => {
+    if (!el) return;
+    el.style.transition = "opacity .7s ease";
+    el.style.opacity = "0";
+  });
+
+  setTimeout(() => {
+    stopBreathStars();
+    showStep(2);
+  }, 1800);
 }
 
 function selectIntent(name, desc, buttonEl) {
@@ -2669,7 +2694,7 @@ const LANG_DATA = {
   breath_eyebrow:     { ja: "調息",               zh: "调息" },
   breath_p1:          { ja: "まず、三度深く呼吸しましょう。", zh: "先深呼吸三次。" },
   breath_p2:          { ja: "心をゆっくりと落ち着かせ、<br>この一瞬が卦に映し出されるように。", zh: "让心意慢慢聚拢，<br>使此刻能够被这一卦看见。" },
-  breath_skip:        { ja: "スキップ（テスト用）", zh: "跳过（仅供测试用）" },
+  breath_skip:        { ja: "心が整いました", zh: "心已静，前行" },
   breath_ready:       { ja: "準備",               zh: "准备" },
   breath_inhale:      { ja: "吸う",               zh: "吸气" },
   breath_exhale:      { ja: "吐く",               zh: "呼气" },
