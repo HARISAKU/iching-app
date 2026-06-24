@@ -1332,7 +1332,7 @@ body.lang-zh h2 {
     line-height:1.85;
     margin-bottom:14px;
   ">
-    <span data-i18n="supp8_hint1">詳しく書く必要はありません。<br>事の概要を簡単に伝えてください。</span><br><br>
+    <span data-i18n="supp8_hint1">細かく書かなくて大丈夫です。<br>何があったか、簡単に伝えてください。</span><br><br>
 
     <span data-i18n="supp8_example">例：<br>明日、試合があります……<br>引越しを考えています……<br>新しい仕事を始めるところです……<br>見知らぬ場所へ行く予定があります……</span>
   </div>
@@ -1916,7 +1916,7 @@ function continueToCasting() {
 function goOptionalInput() {
   if (!selectedIntent) return toast("まず「問事」か「問心」を選んでください");
   if (!selectedCategory) return toast("分野を選んでください");
-  if (selectedIntent === "问事") {
+  if (selectedIntent === "问事" || selectedIntent === "問事") {
     showStep(8);
   } else {
     showStep(3);
@@ -2742,7 +2742,7 @@ const LANG_DATA = {
 
   /* ── Step 8: Optional (問事) ── */
   supp8_p1:           { ja: "この卦に、<br>事の経緯を伝えましょう。", zh: "向这一卦，<br>说明此事。" },
-  supp8_hint1:        { ja: "詳しく書く必要はありません。<br>事の概要を簡単に伝えてください。", zh: "不用写得很详细。<br>把事情简单说清楚就可以。" },
+  supp8_hint1:        { ja: "細かく書かなくて大丈夫です。<br>何があったか、簡単に伝えてください。", zh: "不用写得很详细。<br>把事情简单说清楚就可以。" },
   supp8_example:      { ja: "例：<br>明日、試合があります……<br>引越しを考えています……<br>新しい仕事を始めるところです……<br>見知らぬ場所へ行く予定があります……",
                         zh: "例如：<br>我明天有一场比赛……<br>我准备搬家……<br>我即将开始新的工作……<br>我计划去一个陌生的地方……" },
   supp8_placeholder:  { ja: "問いの概要を簡単に……", zh: "简单写下所问之事……" },
