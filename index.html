@@ -1910,14 +1910,14 @@ function selectCategory(name, desc, buttonEl) {
 }
 
 function continueToCasting() {
-  if (!selectedIntent) return toast("まず「問事」か「問心」を選んでください");
-  if (!selectedCategory) return toast("分野を選んでください");
+  if (!selectedIntent) return toast(t("toast_select_intent"));
+  if (!selectedCategory) return toast(t("toast_select_cat"));
   showStep(5);
 }
 
 function goOptionalInput() {
-  if (!selectedIntent) return toast("まず「問事」か「問心」を選んでください");
-  if (!selectedCategory) return toast("分野を選んでください");
+  if (!selectedIntent) return toast(t("toast_select_intent"));
+  if (!selectedCategory) return toast(t("toast_select_cat"));
   if (selectedIntent === "问事" || selectedIntent === "問事" || selectedIntent === "On Events") {
     showStep(8);
   } else {
