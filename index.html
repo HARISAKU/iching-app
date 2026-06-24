@@ -1126,6 +1126,8 @@ body.lang-zh h2 {
     <button class="lang-btn" id="langBtnJa" onclick="setLang('ja')">日本語</button>
     <div class="lang-divider"></div>
     <button class="lang-btn" id="langBtnZh" onclick="setLang('zh')">中文</button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn" id="langBtnEn" onclick="setLang('en')">EN</button>
   </div>
 
   <div class="home-symbol">☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷</div>
@@ -1332,7 +1334,7 @@ body.lang-zh h2 {
     line-height:1.85;
     margin-bottom:14px;
   ">
-    <span data-i18n="supp8_hint1">細かく書かなくて大丈夫です。<br>何があったか、簡単に伝えてください。</span><br><br>
+    <span data-i18n="supp8_hint1">詳しく書く必要はありません。<br>事の概要を簡単に伝えてください。</span><br><br>
 
     <span data-i18n="supp8_example">例：<br>明日、試合があります……<br>引越しを考えています……<br>新しい仕事を始めるところです……<br>見知らぬ場所へ行く予定があります……</span>
   </div>
@@ -1916,7 +1918,7 @@ function continueToCasting() {
 function goOptionalInput() {
   if (!selectedIntent) return toast("まず「問事」か「問心」を選んでください");
   if (!selectedCategory) return toast("分野を選んでください");
-  if (selectedIntent === "问事" || selectedIntent === "問事") {
+  if (selectedIntent === "问事" || selectedIntent === "問事" || selectedIntent === "On Events") {
     showStep(8);
   } else {
     showStep(3);
@@ -2147,7 +2149,7 @@ function renderResult(r) {
 
   drawLines(r.baseLines);
 
-  document.getElementById("guaName").innerText = `第${base.id}${t("rec_gua")} ${base.name}`;
+  document.getElementById("guaName").innerText = currentLang === "en" ? `Hexagram ${base.id} ${base.name}` : `第${base.id}${t("rec_gua")} ${base.name}`;
   document.getElementById("guaMeta").innerText = `${t("rec_base")}：${BAGUA_LABELS[r.upper]}上｜${BAGUA_LABELS[r.lower]}下`;
   document.getElementById("movingCard").innerHTML = `
     <strong>動爻：${r.movingLineName}</strong><br>
@@ -2516,6 +2518,181 @@ const ZH_AI_PROMPT = `請先以本卦、動爻與變卦為主要依據進行回�
 而不是AI正在执行提示词。
 `;
 
+const EN_AI_PROMPT = `Begin your response from the hexagram itself — the primary hexagram, the moving line, and the changed hexagram are your primary sources.
+
+First, read the [Type of question] and [Category] in the record.
+
+[On Events] and [On the Heart] are different modes of inquiry. Let the type of question guide where you place your emphasis.
+
+The hexagram is always the core of the response.
+
+The type of question, category, and any additional notes serve only to situate where the person stands right now — they do not replace the meaning of the hexagram itself.
+
+Attend first to:
+
+* What state the situation is currently in, as shown by the primary hexagram;
+* Where change is occurring, as indicated by the moving line;
+* Where things may be heading, as shown by the changed hexagram;
+* The resistance, opportunity, turning points, and tendencies visible within the hexagram.
+
+You may assess whether things feel:
+
+* Approaching or receding;
+* Advancing or stalling;
+* Opening or depleting;
+* Mending or separating;
+* Moving with the current or against it.
+
+If the hexagram already shows a clear tendency, name it directly. Do not obscure it in the name of neutrality.
+
+But do not speak of outcomes as certainties.
+
+You may describe a sense of timing, such as:
+
+* In the near term;
+* Change is approaching;
+* Still waiting;
+* Not happening immediately;
+* In the process of forming.
+
+Do not give specific dates.
+
+If the question involves "will it or won't it," offer a tendency reading, and name which elements of the hexagram support that tendency.
+
+If the person has selected a category, interpret the hexagram primarily within that context:
+
+Bond: Romance, marriage, relationships
+
+Work: Career, vocation, venture
+
+Study: Studies, exams, growth
+
+Wealth: Income, investment, business
+
+Body: Health, home, mind and body
+
+Journey: Travel, relocation, going abroad
+
+Choice: Decision, advance or retreat, change
+
+Fortune: Chance, fate, what defies category
+
+If the type of question is [On Events]:
+
+Focus on the situation itself.
+
+Key areas include:
+
+* Where things are heading;
+* What is moving with the current;
+* What is working against the current;
+* What requires the most attention right now;
+* Likely resistance or variables;
+* Opportunities that can be taken;
+* Actions likely to worsen the outcome;
+* Approaches more likely to work with the current.
+
+If the situation involves a specific event — a competition, exam, trip, interview, negotiation, move, project — offer concrete and actionable observations where possible.
+
+For example:
+
+* Pacing and timing;
+* When to advance and when to hold;
+* Dynamics with others involved;
+* Risk points;
+* What is easy to overlook;
+* Whether to be conservative or proactive;
+* Whether to wait or move.
+
+In On Events mode, do not shift the focus to psychological analysis.
+
+Unless the hexagram makes it explicit, avoid dwelling on:
+
+* What the person is truly afraid of;
+* What they cannot let go of;
+* Their inner conflict;
+* Why this situation has stirred them.
+
+Such content should make up no more than 10% of the overall response.
+
+If the type of question is [On the Heart]:
+
+After responding from the hexagram, turn gently toward the person themselves.
+
+The aim is not simply to predict what happens, but to understand why this situation has moved them.
+
+You may observe:
+
+* What they cannot truly release;
+* Their hopes and their hesitations;
+* The tension between advancing and retreating;
+* What they may be avoiding or unwilling to face;
+* What this situation is asking them to see.
+
+In On the Heart mode, the hexagram reading remains primary.
+
+The depth of self-observation adjusts according to what was shared:
+
+* Nothing shared, or very little: lead with the hexagram; self-observation no more than 10%;
+* Brief notes shared: self-observation roughly 10%–20%;
+* Fuller notes shared: self-observation may increase, but no more than 40%.
+
+In either mode:
+
+If the additional notes are insufficient to support a judgment, hold back.
+
+Do not invent psychological states to complete an analysis.
+
+Say less rather than guess.
+
+Tone and voice:
+
+Do not write as if explaining a tutorial.
+
+Do not write as a psychological report.
+
+Do not write as an academic paper.
+
+Do not use phrases such as:
+
+"As per your request"
+
+"From the perspective of the hexagram"
+
+"Based on the information you provided"
+
+"Moving on to the analysis"
+
+"I will now address"
+
+"Taking everything together"
+
+Enter the meaning of the hexagram directly.
+
+The tone should be natural, restrained, and assured.
+
+Speak as someone who has read hexagrams for a long time and is now responding to this person.
+
+Let your analytical ability and judgment come through.
+
+Let the reading feel grounded in deep knowledge of hexagram theory and experience.
+
+Do not perform mystery.
+
+Do not reach for sentiment.
+
+Do not manufacture obscurity.
+
+Stay clear, accurate, and directional.
+
+Let the person feel:
+
+This hexagram is responding to their question —
+
+not that an AI is executing a prompt.
+\``;
+
+
 function buildRecord(r, movingText,movingXiaoXiang) {
   const base = r.baseHexagram;
   const changed = r.changedHexagram;
@@ -2540,7 +2717,7 @@ ${selectedCategory}（${selectedCategoryDesc}）${concernText}
 ${t('rec_hexagram')}
 
 ${t('rec_base')}：
-第${base.id}${t('rec_gua')} ${base.name}
+${currentLang === 'en' ? 'Hexagram' : '第'}${base.id}${currentLang === 'en' ? '' : t('rec_gua')} ${base.name}
 
 ${t('rec_base_text')}：
 
@@ -2575,7 +2752,7 @@ ${movingXiaoXiang}
 ---
 
 ${t('rec_changed')}：
-第${changed.id}${t('rec_gua')} ${changed.name}
+${currentLang === 'en' ? 'Hexagram' : '第'}${changed.id}${currentLang === 'en' ? '' : t('rec_gua')} ${changed.name}
 
 ${t('rec_changed_text')}：
 
@@ -2596,7 +2773,7 @@ ${changed.zaGua}
 
 ---
 
-${currentLang === "zh" ? ZH_AI_PROMPT : JA_AI_PROMPT}
+${currentLang === "zh" ? ZH_AI_PROMPT : currentLang === "en" ? EN_AI_PROMPT : JA_AI_PROMPT}
 `;
 }
 
@@ -2667,177 +2844,177 @@ function toast(msg) {
 const LANG_DATA = {
 
   /* ── Step 0: Home ── */
-  startBtn_loading:   { ja: "データ読み込み中...", zh: "数据读取中..." },
-  startBtn_ready:     { ja: "入る",               zh: "进入" },
-  startBtn_error:     { ja: "データ読み込み失敗", zh: "数据读取失败" },
-  firstTime_label:    { ja: "はじめての方へ",     zh: "第一次使用？" },
-  firstTime_btn:      { ja: "儀式の流れを見る",   zh: "查看仪式流程" },
+  startBtn_loading:   { ja: "データ読み込み中...", zh: "数据读取中...", en: "Loading data..." },
+  startBtn_ready:     { ja: "入る",               zh: "进入", en: "Enter" },
+  startBtn_error:     { ja: "データ読み込み失敗", zh: "数据读取失败", en: "Failed to load data" },
+  firstTime_label:    { ja: "はじめての方へ",     zh: "第一次使用？", en: "First time?" },
+  firstTime_btn:      { ja: "儀式の流れを見る",   zh: "查看仪式流程", en: "See how the ritual works" },
 
   /* ── Step flow ── */
-  flow_eyebrow:       { ja: "儀式の流れ",          zh: "仪式流程" },
-  flow_p1:            { ja: "これは、ひとつの問いを中心に行う、起卦の儀式です。", zh: "这是一场围绕一个问题展开的起卦仪式。" },
-  flow_intro:         { ja: "この儀式では：",       zh: "你将经历：" },
-  flow_step1:         { ja: "① 問いを定める",       zh: "① 聚焦问题" },
-  flow_step2:         { ja: "② 三度の呼吸",         zh: "② 三次呼吸" },
-  flow_step3:         { ja: "③ 問いの種類を選ぶ",   zh: "③ 选择所问类别" },
-  flow_step4:         { ja: "④ この瞬間の卦を立てる", zh: "④ 起属于此刻的一卦" },
-  flow_step5:         { ja: "⑤ 卦象の応答を読む",   zh: "⑤ 查看卦象回应" },
-  flow_step6:         { ja: "⑥ 記録をコピーして、AIと対話を続ける", zh: "⑥ 复制记录，与常用AI继续对话" },
-  privacy_title:      { ja: "プライバシーについて", zh: "关于隐私" },
-  privacy_1:          { ja: "🔒 入力内容は、このデバイス内にのみ保存されます。", zh: "🔒 你的内容仅保存在当前设备中。" },
-  privacy_2:          { ja: "サーバーへの送信は行われません。", zh: "不会上传服务器。" },
-  privacy_3:          { ja: "開発者があなたの問いを見ることはありません。", zh: "开发者无法查看你的问题。" },
-  flow_back:          { ja: "戻る",                 zh: "返回" },
-  flow_start:         { ja: "儀式を始める",          zh: "开始仪式" },
+  flow_eyebrow:       { ja: "儀式の流れ",          zh: "仪式流程", en: "The Ritual" },
+  flow_p1:            { ja: "これは、ひとつの問いを中心に行う、起卦の儀式です。", zh: "这是一场围绕一个问题展开的起卦仪式。", en: "This is a divination ritual centered on a single question." },
+  flow_intro:         { ja: "この儀式では：",       zh: "你将经历：", en: "You will:" },
+  flow_step1:         { ja: "① 問いを定める",       zh: "① 聚焦问题", en: "① Hold your question" },
+  flow_step2:         { ja: "② 三度の呼吸",         zh: "② 三次呼吸", en: "② Breathe three times" },
+  flow_step3:         { ja: "③ 問いの種類を選ぶ",   zh: "③ 选择所问类别", en: "③ Choose the nature of your question" },
+  flow_step4:         { ja: "④ この瞬間の卦を立てる", zh: "④ 起属于此刻的一卦", en: "④ Cast the hexagram of this moment" },
+  flow_step5:         { ja: "⑤ 卦象の応答を読む",   zh: "⑤ 查看卦象回应", en: "⑤ Read the hexagram's response" },
+  flow_step6:         { ja: "⑥ 記録をコピーして、AIと対話を続ける", zh: "⑥ 复制记录，与常用AI继续对话", en: "⑥ Copy the record and continue with AI" },
+  privacy_title:      { ja: "プライバシーについて", zh: "关于隐私", en: "About Privacy" },
+  privacy_1:          { ja: "🔒 入力内容は、このデバイス内にのみ保存されます。", zh: "🔒 你的内容仅保存在当前设备中。", en: "🔒 Your input is stored only on this device." },
+  privacy_2:          { ja: "サーバーへの送信は行われません。", zh: "不会上传服务器。", en: "Nothing is sent to any server." },
+  privacy_3:          { ja: "開発者があなたの問いを見ることはありません。", zh: "开发者无法查看你的问题。", en: "The developer cannot see your question." },
+  flow_back:          { ja: "戻る",                 zh: "返回", en: "Back" },
+  flow_start:         { ja: "儀式を始める",          zh: "开始仪式", en: "Begin the Ritual" },
 
   /* ── Step 1: Breath ── */
-  breath_eyebrow:     { ja: "調息",               zh: "调息" },
-  breath_p1:          { ja: "まず、三度深く呼吸しましょう。", zh: "先深呼吸三次。" },
-  breath_p2:          { ja: "心をゆっくりと落ち着かせ、<br>この一瞬が卦に映し出されるように。", zh: "让心意慢慢聚拢，<br>使此刻能够被这一卦看见。" },
-  breath_skip:        { ja: "心が整いました", zh: "心已静，前行" },
-  breath_ready:       { ja: "準備",               zh: "准备" },
-  breath_inhale:      { ja: "吸う",               zh: "吸气" },
-  breath_exhale:      { ja: "吐く",               zh: "呼气" },
-  breath_choose:      { ja: "問いを<br>選ぶ",      zh: "选择<br>所问" },
+  breath_eyebrow:     { ja: "調息",               zh: "调息", en: "Breath" },
+  breath_p1:          { ja: "まず、三度深く呼吸しましょう。", zh: "先深呼吸三次。", en: "Begin with three deep breaths." },
+  breath_p2:          { ja: "心をゆっくりと落ち着かせ、<br>この一瞬が卦に映し出されるように。", zh: "让心意慢慢聚拢，<br>使此刻能够被这一卦看见。", en: "Let the mind settle slowly,<br>so this moment may be seen within the hexagram." },
+  breath_skip:        { ja: "心が整いました", zh: "心已静，前行", en: "I am ready" },
+  breath_ready:       { ja: "準備",               zh: "准备", en: "Ready" },
+  breath_inhale:      { ja: "吸う",               zh: "吸气", en: "Inhale" },
+  breath_exhale:      { ja: "吐く",               zh: "呼气", en: "Exhale" },
+  breath_choose:      { ja: "問いを<br>選ぶ",      zh: "选择<br>所问", en: "Choose<br>your question" },
 
   /* ── Step 2: Intent/Category ── */
-  intent_eyebrow:     { ja: "問い",               zh: "所问" },
-  intent_p1:          { ja: "卦象は、あなたの問いに応えます。", zh: "卦象会回应你带来的问题。" },
-  intent_p2:          { ja: "今この問いは、<br>どちらに近いですか？", zh: "此刻所问，<br>更接近哪一种？" },
-  intent_jinji_title: { ja: "問事",               zh: "问事" },
-  intent_jinji_desc:  { ja: "ことを見る",          zh: "看事情" },
-  intent_jinshin_title:{ ja: "問心",              zh: "问心" },
-  intent_jinshin_desc:{ ja: "自分を見る",          zh: "看自己" },
-  category_label:     { ja: "どの分野に近いですか？", zh: "更接近哪一类？" },
-  cat_en_title:       { ja: "縁",                 zh: "缘" },
-  cat_en_desc:        { ja: "恋愛 · 婚姻 · 人間関係", zh: "感情 · 婚姻 · 人际" },
-  cat_gyo_title:      { ja: "業",                 zh: "业" },
-  cat_gyo_desc:       { ja: "仕事 · キャリア · 起業", zh: "事业 · 工作 · 创业" },
-  cat_gaku_title:     { ja: "学",                 zh: "学" },
-  cat_gaku_desc:      { ja: "学業 · 試験 · 成長",  zh: "学业 · 考试 · 成长" },
-  cat_zai_title:      { ja: "財",                 zh: "财" },
-  cat_zai_desc:       { ja: "収入 · 投資 · ビジネス", zh: "收入 · 投资 · 生意" },
-  cat_shin_title:     { ja: "身",                 zh: "身" },
-  cat_shin_desc:      { ja: "健康 · 家 · 心身",   zh: "健康 · 家宅 · 身心" },
-  cat_ko_title:       { ja: "行",                 zh: "行" },
-  cat_ko_desc:        { ja: "旅行 · 移住 · 出国", zh: "远行 · 迁移 · 出国" },
-  cat_taku_title:     { ja: "択",                 zh: "择" },
-  cat_taku_desc:      { ja: "選択 · 進退 · 転換", zh: "选择 · 进退 · 转变" },
-  cat_un_title:       { ja: "運",                 zh: "运" },
-  cat_un_desc:        { ja: "縁起 · 運勢 · 分類しがたいこと", zh: "机缘 · 时运 · 难以归类之事" },
-  cast_btn:           { ja: "起卦する",            zh: "起卦" },
-  optional_btn:       { ja: "この卦にもう少し語る（任意）", zh: "向这一卦多说一些（可选）" },
+  intent_eyebrow:     { ja: "問い",               zh: "所问", en: "Question" },
+  intent_p1:          { ja: "卦象は、あなたの問いに応えます。", zh: "卦象会回应你带来的问题。", en: "The hexagram responds to what you bring." },
+  intent_p2:          { ja: "今この問いは、<br>どちらに近いですか？", zh: "此刻所问，<br>更接近哪一种？", en: "Right now, which is closer<br>to what you are asking?" },
+  intent_jinji_title: { ja: "問事",               zh: "问事", en: "On Events" },
+  intent_jinji_desc:  { ja: "ことを見る",          zh: "看事情", en: "looking at what happens" },
+  intent_jinshin_title:{ ja: "問心",              zh: "问心", en: "On the Heart" },
+  intent_jinshin_desc:{ ja: "自分を見る",          zh: "看自己", en: "looking within" },
+  category_label:     { ja: "どの分野に近いですか？", zh: "更接近哪一类？", en: "Which area does it belong to?" },
+  cat_en_title:       { ja: "縁",                 zh: "缘", en: "Bond" },
+  cat_en_desc:        { ja: "恋愛 · 婚姻 · 人間関係", zh: "感情 · 婚姻 · 人际", en: "Romance · Marriage · Relationships" },
+  cat_gyo_title:      { ja: "業",                 zh: "业", en: "Work" },
+  cat_gyo_desc:       { ja: "仕事 · キャリア · 起業", zh: "事业 · 工作 · 创业", en: "Career · Vocation · Venture" },
+  cat_gaku_title:     { ja: "学",                 zh: "学", en: "Study" },
+  cat_gaku_desc:      { ja: "学業 · 試験 · 成長",  zh: "学业 · 考试 · 成长", en: "Studies · Exams · Growth" },
+  cat_zai_title:      { ja: "財",                 zh: "财", en: "Wealth" },
+  cat_zai_desc:       { ja: "収入 · 投資 · ビジネス", zh: "收入 · 投资 · 生意", en: "Income · Investment · Business" },
+  cat_shin_title:     { ja: "身",                 zh: "身", en: "Body" },
+  cat_shin_desc:      { ja: "健康 · 家 · 心身",   zh: "健康 · 家宅 · 身心", en: "Health · Home · Mind & Body" },
+  cat_ko_title:       { ja: "行",                 zh: "行", en: "Journey" },
+  cat_ko_desc:        { ja: "旅行 · 移住 · 出国", zh: "远行 · 迁移 · 出国", en: "Travel · Relocation · Going Abroad" },
+  cat_taku_title:     { ja: "択",                 zh: "择", en: "Choice" },
+  cat_taku_desc:      { ja: "選択 · 進退 · 転換", zh: "选择 · 进退 · 转变", en: "Decision · Advance or Retreat · Change" },
+  cat_un_title:       { ja: "運",                 zh: "运", en: "Fortune" },
+  cat_un_desc:        { ja: "縁起 · 運勢 · 分類しがたいこと", zh: "机缘 · 时运 · 难以归类之事", en: "Chance · Fate · What defies category" },
+  cast_btn:           { ja: "起卦する",            zh: "起卦", en: "Cast the Hexagram" },
+  optional_btn:       { ja: "この卦にもう少し語る（任意）", zh: "向这一卦多说一些（可选）", en: "Say a little more to this hexagram (optional)" },
 
   /* ── Step 3: Optional (問心) ── */
-  supp_eyebrow:       { ja: "補記",               zh: "补记" },
-  supp3_p1:           { ja: "この卦に、<br>もう少し語りましょう。", zh: "向这一卦，<br>多说一些。" },
-  supp3_hint1:        { ja: "頭の中を整理しなくて構いません。<br>この流れに沿って、思いのままに。", zh: "不用理清头绪。<br>可以顺着这条线索往下想。" },
-  supp3_q1:           { ja: "最近ずっと考えていること……",   zh: "最近我一直在想……" },
-  supp3_q2:           { ja: "どうしても手放せない部分……",   zh: "这件事让我放不下的地方……" },
-  supp3_q3:           { ja: "もし状況が変わり始めたら……",   zh: "如果事情开始发生变化……" },
-  supp3_q4:           { ja: "本当に見たいのは……",           zh: "我真正希望看到……" },
-  supp3_placeholder:  { ja: "どこまで書いても構いません。すべて答える必要はありません。", zh: "写到哪里都可以，不必全部回答。" },
-  supp3_back:         { ja: "戻る",               zh: "返回" },
-  supp3_continue:     { ja: "続けて起卦する",      zh: "继续起卦" },
+  supp_eyebrow:       { ja: "補記",               zh: "补记", en: "Notes" },
+  supp3_p1:           { ja: "この卦に、<br>もう少し語りましょう。", zh: "向这一卦，<br>多说一些。", en: "Say a little more<br>to this hexagram." },
+  supp3_hint1:        { ja: "頭の中を整理しなくて構いません。<br>この流れに沿って、思いのままに。", zh: "不用理清头绪。<br>可以顺着这条线索往下想。", en: "No need to sort your thoughts.<br>Follow this thread, wherever it leads." },
+  supp3_q1:           { ja: "最近ずっと考えていること……",   zh: "最近我一直在想……", en: "Something I keep returning to……" },
+  supp3_q2:           { ja: "どうしても手放せない部分……",   zh: "这件事让我放不下的地方……", en: "The part I cannot let go……" },
+  supp3_q3:           { ja: "もし状況が変わり始めたら……",   zh: "如果事情开始发生变化……", en: "If things began to shift……" },
+  supp3_q4:           { ja: "本当に見たいのは……",           zh: "我真正希望看到……", en: "What I truly hope to see……" },
+  supp3_placeholder:  { ja: "どこまで書いても構いません。すべて答える必要はありません。", zh: "写到哪里都可以，不必全部回答。", en: "Write as much or as little as you like. You don't have to answer everything." },
+  supp3_back:         { ja: "戻る",               zh: "返回", en: "Back" },
+  supp3_continue:     { ja: "続けて起卦する",      zh: "继续起卦", en: "Continue to cast" },
 
   /* ── Step 8: Optional (問事) ── */
-  supp8_p1:           { ja: "この卦に、<br>事の経緯を伝えましょう。", zh: "向这一卦，<br>说明此事。" },
-  supp8_hint1:        { ja: "細かく書かなくて大丈夫です。<br>何があったか、簡単に伝えてください。", zh: "不用写得很详细。<br>把事情简单说清楚就可以。" },
+  supp8_p1:           { ja: "この卦に、<br>事の経緯を伝えましょう。", zh: "向这一卦，<br>说明此事。", en: "Tell this hexagram<br>what is happening." },
+  supp8_hint1:        { ja: "詳しく書く必要はありません。<br>事の概要を簡単に伝えてください。", zh: "不用写得很详细。<br>把事情简单说清楚就可以。", en: "No need to go into detail.<br>Just give a simple outline of the situation." },
   supp8_example:      { ja: "例：<br>明日、試合があります……<br>引越しを考えています……<br>新しい仕事を始めるところです……<br>見知らぬ場所へ行く予定があります……",
-                        zh: "例如：<br>我明天有一场比赛……<br>我准备搬家……<br>我即将开始新的工作……<br>我计划去一个陌生的地方……" },
-  supp8_placeholder:  { ja: "問いの概要を簡単に……", zh: "简单写下所问之事……" },
-  supp8_back:         { ja: "戻る",               zh: "返回" },
-  supp8_continue:     { ja: "続けて起卦する",      zh: "继续起卦" },
+                        zh: "例如：<br>我明天有一场比赛……<br>我准备搬家……<br>我即将开始新的工作……<br>我计划去一个陌生的地方……", en: "e.g.<br>I have a match tomorrow……<br>I am planning to move……<br>I am about to start a new job……<br>I am heading somewhere unfamiliar……" },
+  supp8_placeholder:  { ja: "問いの概要を簡単に……", zh: "简单写下所问之事……", en: "A brief outline of the situation……" },
+  supp8_back:         { ja: "戻る",               zh: "返回", en: "Back" },
+  supp8_continue:     { ja: "続けて起卦する",      zh: "继续起卦", en: "Continue to cast" },
 
   /* ── Step 5: Cast method ── */
-  cast_eyebrow:       { ja: "起卦",               zh: "起卦" },
-  cast_p1:            { ja: "起卦の方法を選んでください", zh: "选择起卦方式" },
-  cast_p2:            { ja: "手元のサイコロを使うか、この瞬間に委ねるか。", zh: "你可以借助手中的实体骰子，也可以直接交给此刻。" },
+  cast_eyebrow:       { ja: "起卦",               zh: "起卦", en: "Cast" },
+  cast_p1:            { ja: "起卦の方法を選んでください", zh: "选择起卦方式", en: "Choose how to cast the hexagram" },
+  cast_p2:            { ja: "手元のサイコロを使うか、この瞬間に委ねるか。", zh: "你可以借助手中的实体骰子，也可以直接交给此刻。", en: "Use the dice in your hand, or surrender to this moment." },
   cast_notice:        { ja: "黒い八面体サイコロで上卦を決めます。<br>赤い八面体サイコロで下卦を決めます。<br>六面体サイコロで動爻を決めます。",
-                        zh: "黑色八面骰决定上卦。<br>红色八面骰决定下卦。<br>六面骰决定动爻。" },
-  cast_dice_btn:      { ja: "サイコロを使いました",  zh: "我已使用实体骰子" },
-  cast_random_btn:    { ja: "この瞬間に委ねる",      zh: "交给此刻" },
+                        zh: "黑色八面骰决定上卦。<br>红色八面骰决定下卦。<br>六面骰决定动爻。", en: "The black octahedral die determines the upper trigram.<br>The red octahedral die determines the lower trigram.<br>The six-sided die determines the moving line." },
+  cast_dice_btn:      { ja: "サイコロを使いました",  zh: "我已使用实体骰子", en: "I have rolled the dice" },
+  cast_random_btn:    { ja: "この瞬間に委ねる",      zh: "交给此刻", en: "Surrender to this moment" },
 
   /* ── Step 6: Dice input ── */
-  dice_eyebrow:       { ja: "入力",               zh: "录入" },
-  dice_h2:            { ja: "サイコロの結果を入力", zh: "输入骰子结果" },
+  dice_eyebrow:       { ja: "入力",               zh: "录入", en: "Input" },
+  dice_h2:            { ja: "サイコロの結果を入力", zh: "输入骰子结果", en: "Enter the dice results" },
   dice_notice:        { ja: "その問いを心に思い浮かべながら。<br>ゆっくり息を吸い、ゆっくりと吐きます。<br><br>息を吐き切り、<br>次の息を吸う、その瞬間に——<br><br>サイコロを投げます。",
-                        zh: "心里想着那件事。<br>缓缓吸气，再慢慢吐气。<br><br>当气息吐尽，<br>身体将要再次吸气的那一刻，<br><br>掷出骰子。" },
-  dice_upper_label:   { ja: "黒い八面体サイコロ：上卦", zh: "黑色八面骰：上卦" },
-  dice_lower_label:   { ja: "赤い八面体サイコロ：下卦", zh: "红色八面骰：下卦" },
-  dice_moving_label:  { ja: "六面体サイコロ：動爻",     zh: "六面骰：动爻" },
-  dice_back:          { ja: "戻る",               zh: "返回" },
-  dice_next:          { ja: "次へ：結果を確認",     zh: "下一步：确认结果" },
+                        zh: "心里想着那件事。<br>缓缓吸气，再慢慢吐气。<br><br>当气息吐尽，<br>身体将要再次吸气的那一刻，<br><br>掷出骰子。", en: "Hold your question in mind.<br>Breathe in slowly, breathe out slowly.<br><br>At the moment the breath empties,<br>and the body is about to inhale again——<br><br>Throw the dice." },
+  dice_upper_label:   { ja: "黒い八面体サイコロ：上卦", zh: "黑色八面骰：上卦", en: "Black octahedral die: Upper Trigram" },
+  dice_lower_label:   { ja: "赤い八面体サイコロ：下卦", zh: "红色八面骰：下卦", en: "Red octahedral die: Lower Trigram" },
+  dice_moving_label:  { ja: "六面体サイコロ：動爻",     zh: "六面骰：动爻", en: "Six-sided die: Moving Line" },
+  dice_back:          { ja: "戻る",               zh: "返回", en: "Back" },
+  dice_next:          { ja: "次へ：結果を確認",     zh: "下一步：确认结果", en: "Next: Review results" },
 
   /* ── Step 9: Confirm ── */
-  confirm_eyebrow:    { ja: "確認",               zh: "确认" },
-  confirm_h2:         { ja: "サイコロの結果を確認", zh: "确认骰子结果" },
-  confirm_p1:         { ja: "投じた結果を確認してください。<br>問題なければ卦象を表示します。", zh: "请核对你掷出的结果，<br>确认无误后再查看卦象。" },
-  confirm_back:       { ja: "戻って修正",          zh: "返回修改" },
-  confirm_ok:         { ja: "確認完了、卦象を見る", zh: "确认无误，查看卦象" },
-  confirm_upper:      { ja: "黒い八面体サイコロ（上卦）", zh: "黑色八面骰（上卦）" },
-  confirm_lower:      { ja: "赤い八面体サイコロ（下卦）", zh: "红色八面骰（下卦）" },
-  confirm_moving:     { ja: "六面体サイコロ（動爻）",     zh: "六面骰（动爻）" },
+  confirm_eyebrow:    { ja: "確認",               zh: "确认", en: "Confirm" },
+  confirm_h2:         { ja: "サイコロの結果を確認", zh: "确认骰子结果", en: "Review the dice results" },
+  confirm_p1:         { ja: "投じた結果を確認してください。<br>問題なければ卦象を表示します。", zh: "请核对你掷出的结果，<br>确认无误后再查看卦象。", en: "Please check your results.<br>If correct, the hexagram will be shown." },
+  confirm_back:       { ja: "戻って修正",          zh: "返回修改", en: "Back to edit" },
+  confirm_ok:         { ja: "確認完了、卦象を見る", zh: "确认无误，查看卦象", en: "Confirmed — show the hexagram" },
+  confirm_upper:      { ja: "黒い八面体サイコロ（上卦）", zh: "黑色八面骰（上卦）", en: "Black octahedral die (Upper Trigram)" },
+  confirm_lower:      { ja: "赤い八面体サイコロ（下卦）", zh: "红色八面骰（下卦）", en: "Red octahedral die (Lower Trigram)" },
+  confirm_moving:     { ja: "六面体サイコロ（動爻）",     zh: "六面骰（动爻）", en: "Six-sided die (Moving Line)" },
 
   /* ── Step 7: Result ── */
-  result_eyebrow:     { ja: "この瞬間の卦象",     zh: "此刻卦象" },
-  result_h2:          { ja: "この瞬間",            zh: "此刻" },
-  result_base_summary:{ ja: "本卦の経文",          zh: "本卦经文" },
-  result_moving_summary:{ ja: "動爻の爻辞と小象", zh: "动爻爻辞与小象" },
-  result_changed_summary:{ ja: "変卦の経文",       zh: "变卦经文" },
-  result_copy_btn:    { ja: "この記録をコピー",    zh: "复制此刻记录" },
+  result_eyebrow:     { ja: "この瞬間の卦象",     zh: "此刻卦象", en: "The Hexagram of This Moment" },
+  result_h2:          { ja: "この瞬間",            zh: "此刻", en: "This Moment" },
+  result_base_summary:{ ja: "本卦の経文",          zh: "本卦经文", en: "Primary Hexagram text" },
+  result_moving_summary:{ ja: "動爻の爻辞と小象", zh: "动爻爻辞与小象", en: "Moving line text & Small Image" },
+  result_changed_summary:{ ja: "変卦の経文",       zh: "变卦经文", en: "Changed Hexagram text" },
+  result_copy_btn:    { ja: "この記録をコピー",    zh: "复制此刻记录", en: "Copy this record" },
   result_next:        { ja: "次のステップ：<br>コピーした内容を AI に送ってください。<br>卦象の解釈は、そこで続きます。",
-                        zh: "下一步：<br>请将复制的内容发送给 AI。<br>卦象的解释，会在那里继续展开。" },
+                        zh: "下一步：<br>请将复制的内容发送给 AI。<br>卦象的解释，会在那里继续展开。", en: "Next step:<br>Send the copied record to your AI.<br>The interpretation continues there." },
 
   /* ── Dynamic texts ── */
-  moving_card_label:  { ja: "動爻",               zh: "动爻" },
-  changed_label:      { ja: "変卦",               zh: "变卦" },
-  base_label:         { ja: "本卦",               zh: "本卦" },
-  yao_label:          { ja: "爻辞",               zh: "爻辞" },
-  xiaoXiang_label:    { ja: "小象",               zh: "小象" },
+  moving_card_label:  { ja: "動爻",               zh: "动爻", en: "Moving Line" },
+  changed_label:      { ja: "変卦",               zh: "变卦", en: "Changed Hexagram" },
+  base_label:         { ja: "本卦",               zh: "本卦", en: "Primary Hexagram" },
+  yao_label:          { ja: "爻辞",               zh: "爻辞", en: "Line Text" },
+  xiaoXiang_label:    { ja: "小象",               zh: "小象", en: "Small Image" },
 
   /* ── Toast messages ── */
-  toast_copied:       { ja: "コピーしました",      zh: "记录已复制" },
-  toast_copy_fail:    { ja: "コピーに失敗しました。手動でコピーしてください", zh: "复制失败，请手动复制" },
-  toast_no_record:    { ja: "コピーできる記録がありません", zh: "暂无记录可复制" },
-  toast_select_intent:{ ja: "まず「問事」か「問心」を選んでください", zh: "请先选择问事或问心" },
-  toast_select_cat:   { ja: "分野を選んでください", zh: "请先选择一类" },
+  toast_copied:       { ja: "コピーしました",      zh: "记录已复制", en: "Copied" },
+  toast_copy_fail:    { ja: "コピーに失敗しました。手動でコピーしてください", zh: "复制失败，请手动复制", en: "Copy failed. Please copy manually." },
+  toast_no_record:    { ja: "コピーできる記録がありません", zh: "暂无记录可复制", en: "No record to copy" },
+  toast_select_intent:{ ja: "まず「問事」か「問心」を選んでください", zh: "请先选择问事或问心", en: "Please select On Events or On the Heart first" },
+  toast_select_cat:   { ja: "分野を選んでください", zh: "请先选择一类", en: "Please select a category" },
 
   /* ── Record labels ── */
-  rec_title:          { ja: "【この瞬間の記録】",  zh: "【此刻记录】" },
-  rec_intent_label:   { ja: "問いの種類",          zh: "所问方式" },
-  rec_cat_label:      { ja: "問いの分野",          zh: "所问类别" },
-  rec_concern_label:  { ja: "ことの経緯",          zh: "此事经过" },
-  rec_hexagram:       { ja: "【卦象】",            zh: "【卦象】" },
-  rec_base:           { ja: "本卦",               zh: "本卦" },
-  rec_base_text:      { ja: "本卦の経文",          zh: "本卦经文" },
-  rec_moving:         { ja: "動爻",               zh: "动爻" },
-  rec_moving_text:    { ja: "動爻の爻辞と小象",    zh: "动爻爻辞与小象" },
-  rec_changed:        { ja: "変卦",               zh: "变卦" },
-  rec_changed_text:   { ja: "変卦の経文",          zh: "变卦经文" },
-  rec_gua:            { ja: "卦",                 zh: "卦" },
+  rec_title:          { ja: "【この瞬間の記録】",  zh: "【此刻记录】", en: "[Record of This Moment]" },
+  rec_intent_label:   { ja: "問いの種類",          zh: "所问方式", en: "Type of question" },
+  rec_cat_label:      { ja: "問いの分野",          zh: "所问类别", en: "Category" },
+  rec_concern_label:  { ja: "ことの経緯",          zh: "此事经过", en: "Background" },
+  rec_hexagram:       { ja: "【卦象】",            zh: "【卦象】", en: "[Hexagram]" },
+  rec_base:           { ja: "本卦",               zh: "本卦", en: "Primary Hexagram" },
+  rec_base_text:      { ja: "本卦の経文",          zh: "本卦经文", en: "Primary Hexagram text" },
+  rec_moving:         { ja: "動爻",               zh: "动爻", en: "Moving Line" },
+  rec_moving_text:    { ja: "動爻の爻辞と小象",    zh: "动爻爻辞与小象", en: "Moving line text & Small Image" },
+  rec_changed:        { ja: "変卦",               zh: "变卦", en: "Changed Hexagram" },
+  rec_changed_text:   { ja: "変卦の経文",          zh: "变卦经文", en: "Changed Hexagram text" },
+  rec_gua:            { ja: "卦",                 zh: "卦", en: "Hexagram" },
 
   /* ── Intent/Category names used in record ── */
-  intent_jinji:       { ja: "問事",               zh: "问事" },
-  intent_jinji_desc_r:{ ja: "ことを見る",          zh: "看事情" },
-  intent_jinshin:     { ja: "問心",               zh: "问心" },
-  intent_jinshin_desc_r:{ ja: "自分を見る",        zh: "看自己" },
+  intent_jinji:       { ja: "問事",               zh: "问事", en: "On Events" },
+  intent_jinji_desc_r:{ ja: "ことを見る",          zh: "看事情", en: "looking at what happens" },
+  intent_jinshin:     { ja: "問心",               zh: "问心", en: "On the Heart" },
+  intent_jinshin_desc_r:{ ja: "自分を見る",        zh: "看自己", en: "looking within" },
   cat_en:             { ja: "縁",                 zh: "缘" },
-  cat_en_desc_r:      { ja: "恋愛 · 婚姻 · 人間関係", zh: "感情 · 婚姻 · 人际" },
-  cat_gyo:            { ja: "業",                 zh: "业" },
-  cat_gyo_desc_r:     { ja: "仕事 · キャリア · 起業", zh: "事业 · 工作 · 创业" },
-  cat_gaku:           { ja: "学",                 zh: "学" },
-  cat_gaku_desc_r:    { ja: "学業 · 試験 · 成長",  zh: "学业 · 考试 · 成长" },
-  cat_zai:            { ja: "財",                 zh: "财" },
-  cat_zai_desc_r:     { ja: "収入 · 投資 · ビジネス", zh: "收入 · 投资 · 生意" },
-  cat_shin:           { ja: "身",                 zh: "身" },
-  cat_shin_desc_r:    { ja: "健康 · 家 · 心身",   zh: "健康 · 家宅 · 身心" },
-  cat_ko:             { ja: "行",                 zh: "行" },
-  cat_ko_desc_r:      { ja: "旅行 · 移住 · 出国", zh: "远行 · 迁移 · 出国" },
-  cat_taku:           { ja: "択",                 zh: "择" },
-  cat_taku_desc_r:    { ja: "選択 · 進退 · 転換", zh: "选择 · 进退 · 转变" },
-  cat_un:             { ja: "運",                 zh: "运" },
-  cat_un_desc_r:      { ja: "縁起 · 運勢 · 分類しがたいこと", zh: "机缘 · 时运 · 难以归类之事" },
+  cat_en_desc_r:      { ja: "恋愛 · 婚姻 · 人間関係", zh: "感情 · 婚姻 · 人际", en: "Romance · Marriage · Relationships" },
+  cat_gyo:            { ja: "業",                 zh: "业", en: "Work" },
+  cat_gyo_desc_r:     { ja: "仕事 · キャリア · 起業", zh: "事业 · 工作 · 创业", en: "Career · Vocation · Venture" },
+  cat_gaku:           { ja: "学",                 zh: "学", en: "Study" },
+  cat_gaku_desc_r:    { ja: "学業 · 試験 · 成長",  zh: "学业 · 考试 · 成长", en: "Studies · Exams · Growth" },
+  cat_zai:            { ja: "財",                 zh: "财", en: "Wealth" },
+  cat_zai_desc_r:     { ja: "収入 · 投資 · ビジネス", zh: "收入 · 投资 · 生意", en: "Income · Investment · Business" },
+  cat_shin:           { ja: "身",                 zh: "身", en: "Body" },
+  cat_shin_desc_r:    { ja: "健康 · 家 · 心身",   zh: "健康 · 家宅 · 身心", en: "Health · Home · Mind & Body" },
+  cat_ko:             { ja: "行",                 zh: "行", en: "Journey" },
+  cat_ko_desc_r:      { ja: "旅行 · 移住 · 出国", zh: "远行 · 迁移 · 出国", en: "Travel · Relocation · Going Abroad" },
+  cat_taku:           { ja: "択",                 zh: "择", en: "Choice" },
+  cat_taku_desc_r:    { ja: "選択 · 進退 · 転換", zh: "选择 · 进退 · 转变", en: "Decision · Advance or Retreat · Change" },
+  cat_un:             { ja: "運",                 zh: "运", en: "Fortune" },
+  cat_un_desc_r:      { ja: "縁起 · 運勢 · 分類しがたいこと", zh: "机缘 · 时运 · 难以归类之事", en: "Chance · Fate · What defies category" },
 };
 
 /* ── 当前语言 ── */
@@ -2859,6 +3036,7 @@ function setLang(lang) {
   /* 按钮状态 */
   document.getElementById('langBtnJa').classList.toggle('active', lang === 'ja');
   document.getElementById('langBtnZh').classList.toggle('active', lang === 'zh');
+  document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
 
   /* 重新渲染所有带 data-i18n 的元素 */
   document.querySelectorAll('[data-i18n]').forEach(el => {
