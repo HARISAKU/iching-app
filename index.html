@@ -2169,21 +2169,24 @@ ${movingXiaoXiang}`;
   showStep(7);
 }
 
-const JA_AI_PROMPT = `まず本卦・動爻・変卦を主な根拠として応答してください。
-【問いの種類】と【問いの分野】を最初に確認してください。
+const JA_AI_PROMPT = `【問いの種類】と【問いの分野】を最初に確認してください。
 
 【問事】と【問心】は異なる種類の問いです。問いの種類に応じて、応答の重点を決めてください。
-
-まず本卦・動爻・変卦を主な根拠として応答してください。
 
 卦象は、常に応答の主体です。
 
 問いの種類・分野・補足内容は、問卦者が今どこにいるかを理解する手がかりとして使うものであり、卦意そのものに取って代わるものではありません。
 
+この卦には必ず一つの動爻があります。読み解きの重心は動爻の爻辞にあります。本卦はその背景と現在の状態を示し、変卦はその後の趨勢と結果を示します。三者は対等ではありません。動爻を核心として、本卦・変卦をその文脈の中に置いてください。
+
+爻辞そのものの意象と言葉の感触に直接入ること。卦名だけを解説する表面的な読み方はしないこと。
+
+動爻の爻位（初・二・三・四・五・上）も意味を持ちます。変化がどの層で起きているか——潜伏の段階か、中堅の位置か、極まった局面か——を爻位の高低と内外から読み取ってください。
+
 優先して読み取ること：
 
 * 本卦は、この事柄が今どのような状態にあるかを示している；
-* 動爻は、変化がどこで起きているかを指している；
+* 動爻は、変化がどこで起きているかを指している——ここが解卦の核心；
 * 変卦は、その後どこへ向かうかを示している；
 * 卦の中に現れている障害・機会・転換点・趨勢。
 
@@ -2343,21 +2346,24 @@ const JA_AI_PROMPT = `まず本卦・動爻・変卦を主な根拠として応�
 
 AIがプロンプトを実行しているのではなく。`;
 
-const ZH_AI_PROMPT = `請先以本卦、動爻與變卦為主要依據進行回應。
-请先阅读【所问方式】与【所问类别】。
+const ZH_AI_PROMPT = `请先阅读【所问方式】与【所问类别】。
 
 【问事】与【问心】是不同类型的问题，请根据所问方式决定回应重点。
-
-请先以本卦、动爻与变卦为主要依据进行回应。
 
 卦象始终是回应的主体。
 
 所问方式、类别与补充内容，只用于帮助理解问卦者此刻所处的位置，不应取代卦意本身。
 
+此卦必有一个动爻。解卦的重心在于动爻的爻辞。本卦显示当前处境与状态，变卦显示后续趋势与结果。三者不是平等关系——以动爻为核心，将本卦与变卦置于其前后文脉之中。
+
+请直接进入爻辞本身的意象与语感，不要停留在卦名层面作表面解说。
+
+动爻的爻位（初、二、三、四、五、上）本身也有含义。请从爻位的高低与内外，读出变化发生在哪个层面——是潜伏未显的阶段，还是中位稳健，还是已到极处。
+
 优先关注：
 
 * 本卦显示这件事当前处在什么状态；
-* 动爻指出变化发生在哪里；
+* 动爻指出变化发生在哪里——这是解卦的核心；
 * 变卦显示后续可能走向哪里；
 * 卦中显现出的阻力、机会、转折与趋势。
 
@@ -2518,9 +2524,7 @@ const ZH_AI_PROMPT = `請先以本卦、動爻與變卦為主要依據進行回�
 而不是AI正在执行提示词。
 `;
 
-const EN_AI_PROMPT = `Begin your response from the hexagram itself — the primary hexagram, the moving line, and the changed hexagram are your primary sources.
-
-First, read the [Type of question] and [Category] in the record.
+const EN_AI_PROMPT = `First, read the [Type of question] and [Category] in the record.
 
 [On Events] and [On the Heart] are different modes of inquiry. Let the type of question guide where you place your emphasis.
 
@@ -2528,10 +2532,16 @@ The hexagram is always the core of the response.
 
 The type of question, category, and any additional notes serve only to situate where the person stands right now — they do not replace the meaning of the hexagram itself.
 
+This cast always produces exactly one moving line. The moving line's text is the core of the reading. The primary hexagram shows the current condition and context; the changed hexagram shows where things are heading. These three are not equal — place the moving line at the center, and read the primary and changed hexagrams as its before and after.
+
+Enter the imagery and language of the line text directly. Do not stay at the level of the hexagram name.
+
+The position of the moving line (first through sixth) carries meaning. Read from its height and placement — inner or outer trigram — to sense at what level the change is occurring: something still forming beneath the surface, a position of steadiness in the middle, or a situation that has reached its limit.
+
 Attend first to:
 
 * What state the situation is currently in, as shown by the primary hexagram;
-* Where change is occurring, as indicated by the moving line;
+* Where change is occurring, as indicated by the moving line — this is the core of the reading;
 * Where things may be heading, as shown by the changed hexagram;
 * The resistance, opportunity, turning points, and tendencies visible within the hexagram.
 
@@ -3707,7 +3717,7 @@ setLang(currentLang);
     this.theta = Math.atan2(dy, dx);
     this.seed  = Math.random()*300;
     this.col   = COLORS[Math.floor(Math.random()*COLORS.length)];
-    this.size  = 1.2 + Math.random()*2.4;
+    this.size  = 0.7 + Math.random()*1.4;
     this.alpha = 0;
     this.age   = 0;
     this.fadeInDur = 200 + Math.random()*350;
@@ -3721,13 +3731,20 @@ setLang(currentLang);
     this.alpha = Math.min(1, this.age / this.fadeInDur);
 
     /* 顺时针角速度，近中心更快 */
-    const omega = 0.0018 * (1 + 160 / (this.rr + 35));
+    const omega = 0.0009 * (1 + 160 / (this.rr + 35));
     this.theta += omega * dt;
 
     /* 向心速度，稍慢一些 */
     const vr = (0.14 + this.rr * 0.008) * (dt / 16);
     const nd = noise(this.t, this.seed) * 1.6;
     this.rr = Math.max(0, this.rr - vr + nd*(dt/16));
+
+    /* rr极小时：变暗消失 */
+    if(this.rr < 12){
+      if(!this.dyingStart) this.dyingStart = this.age;
+      const dyingAge = this.age - this.dyingStart;
+      this.alpha = Math.max(0, 1 - dyingAge / 280);
+    }
   };
 
   Particle.prototype.draw = function(){
@@ -3795,12 +3812,12 @@ setLang(currentLang);
   /* 时序
      0       ms : 开始
      0–800   ms : 粒子从边缘陆续生成
-     800–3000ms : 粒子旋转漩涡向中心汇聚
-     3000    ms : 第一道涟漪（粒子已聚拢中心）
-     3400    ms : 第二道涟漪
-     3800    ms : 第三道涟漪
-     4200    ms : 开始点亮（800ms渐变至页面背景色）
-     5000    ms : 跳转
+     800–4200ms : 粒子旋转漩涡向中心汇聚，靠近后变暗消失
+     4200    ms : 第一道涟漪（粒子已消散）
+     4600    ms : 第二道涟漪
+     5000    ms : 第三道涟漪
+     5400    ms : 开始点亮（800ms渐变至页面背景色）
+     6200    ms : 跳转
   */
   let ripplesSpawned = 0;
 
@@ -3813,15 +3830,15 @@ setLang(currentLang);
 
     particles.forEach(p => { p.update(dt); p.draw(); });
 
-    if(elapsed >= 3000 && ripplesSpawned === 0){ spawnRipple(now); ripplesSpawned = 1; }
-    if(elapsed >= 3400 && ripplesSpawned === 1){ spawnRipple(now); ripplesSpawned = 2; }
-    if(elapsed >= 3800 && ripplesSpawned === 2){ spawnRipple(now); ripplesSpawned = 3; }
+    if(elapsed >= 4200 && ripplesSpawned === 0){ spawnRipple(now); ripplesSpawned = 1; }
+    if(elapsed >= 4600 && ripplesSpawned === 1){ spawnRipple(now); ripplesSpawned = 2; }
+    if(elapsed >= 5000 && ripplesSpawned === 2){ spawnRipple(now); ripplesSpawned = 3; }
 
     drawRipples(now);
 
-    /* 点亮：4200ms开始，800ms渐变至页面背景色 */
-    if(elapsed >= 4200){
-      const t = Math.min(1, (elapsed - 4200) / 800);
+    /* 点亮：5400ms开始，800ms渐变至页面背景色 */
+    if(elapsed >= 5400){
+      const t = Math.min(1, (elapsed - 5400) / 800);
       /* ease-in-out */
       const te = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
       const r = Math.round(BG.r * te);
@@ -3831,8 +3848,8 @@ setLang(currentLang);
       ctx.fillRect(0,0,W,H);
     }
 
-    /* 跳转：5000ms */
-    if(elapsed >= 5000 && onDone){
+    /* 跳转：6200ms */
+    if(elapsed >= 6200 && onDone){
       const cb = onDone; onDone = null;
       cb();
 
