@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>兆 · KIZASHI</title>
+<meta name="theme-color" content="#121009" />
+<meta name="color-scheme" content="dark" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -11,17 +13,17 @@
 <style>
 /* ── 色板：纸墨朱印 ── */
 :root {
-  --bg:       #EDE3D0;
-  --card:     #F7F0E3;
-  --card2:    #F0E8D5;
-  --ink:      #1C1812;
-  --muted:    #5C5044;
-  --soft:     #9C8B76;
-  --line:     #C8BAA2;
-  --accent:   #1C1812;
-  --vermil:   #B82820;
-  --gold:     #8B6914;
-  --light:    #E6D9C4;
+  --bg:       #121009;
+  --card:     #1E1912;
+  --card2:    #262017;
+  --ink:      #E7DCC6;
+  --muted:    #B5A78C;
+  --soft:     #82755F;
+  --line:     #3B3327;
+  --accent:   #E7DCC6;
+  --vermil:   #C24238;
+  --gold:     #C9A65A;
+  --light:    #2C251A;
   --f-serif:  "Noto Serif JP","Hiragino Mincho ProN","Yu Mincho","游明朝",serif;
   --f-sans:   "Hiragino Sans","Noto Sans JP","Yu Gothic","游ゴシック",sans-serif;
   --f-serif-zh: "Noto Serif SC","Hiragino Mincho ProN","Songti SC","SimSun",serif;
@@ -39,14 +41,29 @@ body {
       0deg,
       transparent,
       transparent 28px,
-      rgba(139,105,20,.04) 28px,
-      rgba(139,105,20,.04) 29px
+      rgba(201,166,90,.025) 28px,
+      rgba(201,166,90,.025) 29px
     );
   color:var(--ink);
   font-family:var(--f-serif);
   font-weight:400;
   -webkit-font-smoothing:antialiased;
   line-height:1.8;
+}
+
+/* 陰翳の晕影：四周沉入暗处，光只留在视线中央 */
+body::after {
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+  background:radial-gradient(
+    ellipse 120% 90% at 50% 32%,
+    transparent 42%,
+    rgba(0,0,0,.22) 78%,
+    rgba(0,0,0,.42) 100%
+  );
 }
 
 .app {
@@ -64,9 +81,10 @@ body {
   padding:28px 18px 28px;
   min-height:82vh;
   box-shadow:
-    2px 2px 0 #C8BAA2,
-    4px 4px 0 rgba(139,105,20,.08),
-    0 12px 40px rgba(28,24,18,.10);
+    inset 0 1px 0 rgba(231,220,198,.05),
+    2px 2px 0 #0C0A06,
+    4px 4px 0 rgba(0,0,0,.35),
+    0 18px 52px rgba(0,0,0,.55);
   position:relative;
 }
 
@@ -324,7 +342,7 @@ label {
   position:absolute;
   inset:-8px;
   border-radius:50%;
-  border:1px solid rgba(200,186,162,.3);
+  border:1px solid rgba(231,220,198,.14);
 }
 
 .breath-circle.inhale {
@@ -356,9 +374,9 @@ label {
 
 /* 选择所问 — 墨色晕染溶解动效 */
 @keyframes inkCircleFade {
-  0%   { opacity:1; transform:scale(1);    filter:blur(0px);  box-shadow:0 0 0 1px var(--muted), 0 0 18px rgba(28,24,18,.10); }
-  25%  { opacity:.95; transform:scale(1.06); filter:blur(0px); box-shadow:0 0 0 3px rgba(28,24,18,.5), 0 0 40px rgba(28,24,18,.30); }
-  100% { opacity:0; transform:scale(1.5);  filter:blur(14px); box-shadow:0 0 0 60px rgba(28,24,18,0); }
+  0%   { opacity:1; transform:scale(1);    filter:blur(0px);  box-shadow:0 0 0 1px var(--muted), 0 0 18px rgba(233,200,124,.10); }
+  25%  { opacity:.95; transform:scale(1.06); filter:blur(0px); box-shadow:0 0 0 3px rgba(233,200,124,.45), 0 0 46px rgba(233,200,124,.28); }
+  100% { opacity:0; transform:scale(1.5);  filter:blur(14px); box-shadow:0 0 0 60px rgba(233,200,124,0); }
 }
 @keyframes inkLabelFade {
   0%   { opacity:1; filter:blur(0px); }
@@ -380,7 +398,7 @@ label {
   cursor:pointer;
   border-color:var(--ink);
   color:var(--ink);
-  box-shadow:0 0 0 1px var(--ink), 0 0 18px rgba(28,24,18,.10);
+  box-shadow:0 0 0 1px var(--ink), 0 0 20px rgba(233,200,124,.14);
   transition:transform .6s ease, opacity .6s ease, box-shadow .6s ease;
 }
 
@@ -675,6 +693,37 @@ html[lang="en"] .intent-title {
   border-radius:0;
 }
 
+/* ── 卦象显现の柔光 ──
+   起卦黑幕收去后，卦象自阴影中透出微光，像烛火照见漆器，
+   光晕缓缓退去，最终安定为暗处纸色。 */
+#step-7.active .hexagram {
+  animation: hexEmerge 2.4s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes hexEmerge {
+  0%   { opacity:0; filter:brightness(2.1) blur(9px); }
+  40%  { opacity:1; filter:brightness(1.4) blur(2px); }
+  100% { opacity:1; filter:brightness(1) blur(0); }
+}
+
+#step-7.active .line,
+#step-7.active .line.broken::before,
+#step-7.active .line.broken::after {
+  animation: lineGlow 3s ease-out;
+}
+@keyframes lineGlow {
+  0%   { box-shadow:0 0 20px rgba(233,200,124,.5); }
+  100% { box-shadow:0 0 0 rgba(233,200,124,0); }
+}
+
+#step-7.active .gua-glyph {
+  animation: glyphGlow 3.2s ease-out;
+}
+@keyframes glyphGlow {
+  0%   { opacity:0; text-shadow:0 0 26px rgba(233,200,124,.6); }
+  30%  { opacity:1; text-shadow:0 0 18px rgba(233,200,124,.4); }
+  100% { opacity:1; text-shadow:0 0 0 rgba(233,200,124,0); }
+}
+
 .gua-name {
   display:flex;
   justify-content:center;
@@ -723,6 +772,8 @@ html[lang="en"] .intent-title {
   font-family:var(--f-serif);
   letter-spacing:.04em;
   line-height:1.9;
+  /* 朱漆在暗中泛出的一线暖光 */
+  box-shadow:0 -8px 22px -12px rgba(194,66,56,.35);
 }
 
 /* ── 折叠经文 ── */
@@ -868,6 +919,40 @@ details[open] summary::before { content:"－"; }
   height: auto;
   display: block;
   margin: 0 auto;
+  /* 陰翳：画作退入暗处，如挂在昏暗座敷中的一幅纸本 */
+  filter: brightness(.80) contrast(.94) sepia(.10) saturate(.88);
+  animation: shojiReveal 2.8s cubic-bezier(.25,.6,.35,1);
+}
+
+/* 封面进入：光像透过障子纸般缓缓渗入，画从暗中显形 */
+@keyframes shojiReveal {
+  0%   { filter: brightness(.30) contrast(.90) sepia(.14) saturate(.7) blur(7px); opacity:0; }
+  30%  { opacity:1; }
+  70%  { filter: brightness(.92) contrast(.94) sepia(.10) saturate(.88) blur(1px); }
+  100% { filter: brightness(.80) contrast(.94) sepia(.10) saturate(.88) blur(0); }
+}
+
+/* 行灯の柔光：一层暖光笼罩封面上方，缓缓亮起后安定于微明 */
+#step-0 { position:relative; }
+#step-0::after {
+  content:"";
+  position:absolute;
+  top:-28px; left:-18px; right:-18px; bottom:-28px;
+  pointer-events:none;
+  z-index:1;
+  background:radial-gradient(
+    ellipse 95% 52% at 50% 24%,
+    rgba(233,200,124,.10) 0%,
+    rgba(233,200,124,.035) 46%,
+    transparent 74%
+  );
+  opacity:0;
+  animation: andonRise 3.4s ease-out .2s forwards;
+}
+@keyframes andonRise {
+  0%   { opacity:0; }
+  55%  { opacity:1; }
+  100% { opacity:.72; }
 }
 
 /* Top fade: feathered blend into card background (new artwork already reads as paper, so a soft, shallow fade is enough) */
@@ -876,7 +961,7 @@ details[open] summary::before { content:"－"; }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 40px;
-  background: linear-gradient(to bottom, var(--card) 0%, rgba(247,240,227,.55) 45%, transparent 100%);
+  background: linear-gradient(to bottom, var(--card) 0%, rgba(30,25,18,.55) 45%, transparent 100%);
   z-index: 2;
   pointer-events: none;
 }
@@ -887,7 +972,7 @@ details[open] summary::before { content:"－"; }
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 46px;
-  background: linear-gradient(to top, var(--card) 0%, rgba(247,240,227,.55) 45%, transparent 100%);
+  background: linear-gradient(to top, var(--card) 0%, rgba(30,25,18,.55) 45%, transparent 100%);
   z-index: 2;
   pointer-events: none;
 }
@@ -897,7 +982,7 @@ details[open] summary::before { content:"－"; }
   position: absolute;
   top: 0; left: 0; bottom: 0;
   width: 52px;
-  background: linear-gradient(to right, var(--card) 0%, rgba(247,240,227,.5) 40%, rgba(247,240,227,0) 100%);
+  background: linear-gradient(to right, var(--card) 0%, rgba(30,25,18,.5) 40%, rgba(30,25,18,0) 100%);
   z-index: 3;
   pointer-events: none;
 }
@@ -907,7 +992,7 @@ details[open] summary::before { content:"－"; }
   position: absolute;
   top: 0; right: 0; bottom: 0;
   width: 52px;
-  background: linear-gradient(to left, var(--card) 0%, rgba(247,240,227,.5) 40%, rgba(247,240,227,0) 100%);
+  background: linear-gradient(to left, var(--card) 0%, rgba(30,25,18,.5) 40%, rgba(30,25,18,0) 100%);
   z-index: 3;
   pointer-events: none;
 }
