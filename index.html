@@ -1018,31 +1018,19 @@ details[open] summary::before { content:"－"; }
   background: transparent;
 }
 
-/* 全屏光爆闪光 */
+/* 全屏微明：篝火被風掀起的一瞬，不是光爆 */
 #shrine-flash {
   position: fixed;
   inset: 0;
   background: radial-gradient(ellipse at center,
-    rgba(255, 210, 120, 0.95) 0%,
-    rgba(255, 180, 60, 0.7) 30%,
-    rgba(200, 140, 20, 0.3) 60%,
+    rgba(233, 200, 124, 0.30) 0%,
+    rgba(200, 150, 60, 0.16) 35%,
+    rgba(140, 100, 30, 0.06) 60%,
     transparent 80%
   );
   opacity: 0;
   pointer-events: none;
   z-index: 10000;
-}
-
-/* 环形冲击波 */
-.shrine-ring {
-  position: fixed;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 200, 80, 0.8);
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 10001;
-  box-shadow: 0 0 12px rgba(255, 200, 80, 0.4), inset 0 0 12px rgba(255, 200, 80, 0.2);
 }
 
 /* 符文光迹 canvas */
@@ -1241,9 +1229,6 @@ body.lang-zh h2 {
   <div id="shrine-flash"></div>
   <canvas id="shrine-canvas"></canvas>
   <div id="shrine-shards"></div>
-  <div class="shrine-ring" id="ring1"></div>
-  <div class="shrine-ring" id="ring2"></div>
-  <div class="shrine-ring" id="ring3"></div>
 </div>
 <div id="hand-glow"></div>
 <canvas id="breath-star-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:9998;"></canvas>
@@ -4054,15 +4039,12 @@ setLang(currentLang);
   P.prototype.draw = function() {
     ctx.save();
     ctx.globalAlpha = Math.max(0, this.life);
-    if (this.glow) { ctx.shadowColor = this.color; ctx.shadowBlur = 10; }
+    if (this.glow) { ctx.shadowColor = this.color; ctx.shadowBlur = 6; }
     ctx.fillStyle   = this.color;
     ctx.strokeStyle = this.color;
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
-    if (this.shape === 'star') {
-      star4(ctx, 0, 0, this.r, this.r*0.4);
-      ctx.fill();
-    } else if (this.shape === 'line') {
+    if (this.shape === 'line') {
       ctx.lineWidth = Math.max(0.5, this.r*0.25);
       ctx.beginPath(); ctx.moveTo(0,-this.r); ctx.lineTo(0,this.r); ctx.stroke();
     } else {
@@ -4070,18 +4052,6 @@ setLang(currentLang);
     }
     ctx.restore();
   };
-
-  function star4(ctx, cx, cy, R, r) {
-    var step = Math.PI/4;
-    ctx.beginPath();
-    for (var i=0;i<8;i++) {
-      var rad = (i%2===0)?R:r;
-      var a = i*step - Math.PI/2;
-      if (i===0) ctx.moveTo(cx+Math.cos(a)*rad, cy+Math.sin(a)*rad);
-      else ctx.lineTo(cx+Math.cos(a)*rad, cy+Math.sin(a)*rad);
-    }
-    ctx.closePath();
-  }
 
   function tick() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -4092,29 +4062,6 @@ setLang(currentLang);
   }
 
   /* 环形冲击波 */
-  function ring(cx, cy, idx) {
-    var el = document.getElementById('ring'+(idx+1));
-    el.style.cssText = [
-      'position:fixed',
-      'border-radius:50%',
-      'border:1.5px solid rgba(255,210,80,0.85)',
-      'box-shadow:0 0 10px rgba(255,200,60,0.4)',
-      'pointer-events:none',
-      'z-index:10001',
-      'width:24px','height:24px',
-      'left:'+cx+'px','top:'+cy+'px',
-      'transform:translate(-50%,-50%) scale(0)',
-      'opacity:0.9',
-      'transition:none'
-    ].join(';');
-    requestAnimationFrame(function(){
-      var scale = 14 + idx*5;
-      el.style.transition = 'transform 0.6s cubic-bezier(0.15,0.6,0.3,1), opacity 0.6s ease';
-      el.style.transform  = 'translate(-50%,-50%) scale('+scale+')';
-      el.style.opacity    = '0';
-    });
-  }
-
   /* 全屏闪光 */
   function flash(alpha, dur) {
     var el = document.getElementById('shrine-flash');
@@ -4142,28 +4089,29 @@ setLang(currentLang);
 
       /* 流向中心 */
       var ang = Math.atan2(cy-py, cx-px);
-      var spd = 2.5+Math.random()*2;
+      var spd = 2.0+Math.random()*1.6;
       pts.push(new P(px, py, {
         vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd,
-        decay:0.025, r:1.5+Math.random()*2,
-        color: t<15 ? '#7FFFD4' : '#FFD580',
-        shape: Math.random()>0.5?'star':'dot',
+        decay:0.018+Math.random()*0.014,
+        r:0.6+Math.pow(Math.random(),2)*2.4,
+        color: t<15 ? '#C9A65A' : '#E9C87C',   /* 暗金→亮金：光自古物中渗出，无异质色 */
+        shape: 'dot',
         glow: true
       }));
 
-      /* 向外辐射小粒子（能量感） */
+      /* 向外辐射小粒子（火の粉：不均斉） */
       if (Math.random()>0.4) {
         var oa = Math.random()*Math.PI*2;
         pts.push(new P(cx+(Math.random()-0.5)*W*0.8, cy+(Math.random()-0.5)*H*0.8, {
-          vx: Math.cos(oa)*1.2, vy: Math.sin(oa)*1.2 - 0.3,
-          decay:0.03, r:1+Math.random()*1.5,
-          color:'#FFD580', shape:'dot', glow:true, gravity:-0.02
+          vx: Math.cos(oa)*0.9, vy: Math.sin(oa)*0.9 - 0.35,
+          decay:0.012+Math.random()*0.03, r:0.5+Math.pow(Math.random(),2)*1.8,
+          color:'#C9A65A', shape:'dot', glow:true, gravity:-0.012
         }));
       }
       if (t>=28) clearInterval(lineEmit);
     }, 35);
 
-    /* logo元素本身：颜色从青绿→金橙渐变 */
+    /* logo元素本身：暗中缓缓透出暖光（陰翳：光在古物上流动，不炸开） */
     var logoEl  = document.querySelector('.home-logo-fade');
     var symEl   = document.querySelector('.home-symbol');
     var eyeEl   = document.querySelector('.eyebrow');
@@ -4175,32 +4123,34 @@ setLang(currentLang);
     var colorTick = setInterval(function(){
       t2 += 0.06;
       var intensity = Math.min(1, t2);
-      /* 青绿→金橙 filter bloom */
-      var blur = intensity*4;
-      var bright = 1 + intensity*0.8;
-      if (logoEl)  logoEl.style.filter  = 'brightness('+bright+') drop-shadow(0 0 '+blur+'px rgba(255,200,60,0.8))';
-      if (symEl)   symEl.style.filter   = 'brightness('+bright+') drop-shadow(0 0 '+blur+'px rgba(255,200,60,0.6))';
-      if (eyeEl)   eyeEl.style.filter   = 'brightness('+(1+intensity*0.4)+')';
+      var blur = intensity*2.5;
+      var bright = 1 + intensity*0.35;
+      if (logoEl)  logoEl.style.filter  = 'brightness('+bright+') drop-shadow(0 0 '+blur+'px rgba(233,200,124,0.45))';
+      if (symEl)   symEl.style.filter   = 'brightness('+bright+') drop-shadow(0 0 '+blur+'px rgba(233,200,124,0.35))';
+      if (eyeEl)   eyeEl.style.filter   = 'brightness('+(1+intensity*0.2)+')';
       if (t2>=1.0) clearInterval(colorTick);
     }, 30);
   }
 
-  /* ── 阶段二：光爆峰值 + 冲击波 ───────────────── */
+  /* ── 阶段二：火の粉扬起（陰翳：光是访客，不征服屏幕）──
+     不做光爆、不做冲击波环。像篝火被风掀起：
+     一瞬微明，火星腾起后各自熄灭，尺寸与寿命不均斉。 */
   function phase2_bloom(cx, cy) {
-    flash('0.5', 0.2);
-    [0, 220, 440].forEach(function(d, i){ setTimeout(function(){ ring(cx,cy,i); }, d); });
+    flash('0.12', 0.5);
 
-    /* 从logo中心向四周爆发粒子 */
-    for (var i=0;i<80;i++) {
+    for (var i=0;i<48;i++) {
       var ang = Math.random()*Math.PI*2;
-      var spd = 1.5+Math.random()*5;
+      /* 速度偏上方（火星上飘），整体压慢 */
+      var spd = 0.7+Math.random()*2.4;
+      /* 不均斉：幂分布——多数极小，少数大颗 */
+      var rr  = 0.5 + Math.pow(Math.random(), 2.2)*3.2;
       pts.push(new P(cx+(Math.random()-0.5)*60, cy+(Math.random()-0.5)*30, {
-        vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd,
-        decay: 0.012+Math.random()*0.012,
-        r: 1.5+Math.random()*3.5,
-        color: Math.random()>0.35?'#FFD580':'#FFFAE8',
-        shape: Math.random()>0.45?'star':'dot',
-        gravity: -0.05, glow: true
+        vx: Math.cos(ang)*spd*0.7, vy: Math.sin(ang)*spd - 0.6,
+        decay: 0.006+Math.random()*0.022,
+        r: rr,
+        color: Math.random()>0.3?'#E9C87C':'#C9A65A',
+        shape: 'dot',
+        gravity: -0.015, glow: true
       }));
     }
   }
@@ -4226,10 +4176,10 @@ setLang(currentLang);
         'display:flex','align-items:center','justify-content:center',
         'font-family:var(--f-serif)',
         'font-size:26px',
-        'color:#FFD580',
-        'text-shadow:0 0 14px #FFB830, 0 0 28px rgba(255,180,40,0.5)',
-        'border:1px solid rgba(255,213,128,0.5)',
-        'background:radial-gradient(ellipse at center,rgba(255,210,100,0.18) 0%,transparent 70%)',
+        'color:#E9C87C',
+        'text-shadow:0 0 8px rgba(233,200,124,0.45)',
+        'border:1px solid rgba(201,166,90,0.28)',
+        'background:radial-gradient(ellipse at center,rgba(201,166,90,0.08) 0%,transparent 70%)',
         'border-radius:2px',
         'opacity:0',
         'pointer-events:none',
@@ -4250,12 +4200,12 @@ setLang(currentLang);
               sr.left+sr.width*Math.random(),
               sr.top+sr.height*Math.random(),
               {
-                vx:Math.cos(pa)*ps, vy:Math.sin(pa)*ps-0.5,
-                decay:0.01+Math.random()*0.01,
-                r:1.5+Math.random()*3,
-                color:Math.random()>0.4?'#FFD580':'#FFFAE8',
-                shape:Math.random()>0.5?'star':'dot',
-                gravity:-0.03, spin:0.1, glow:true
+                vx:Math.cos(pa)*ps*0.6, vy:Math.sin(pa)*ps*0.6-0.4,
+                decay:0.007+Math.random()*0.02,
+                r:0.5+Math.pow(Math.random(),2)*2.6,
+                color:Math.random()>0.35?'#E9C87C':'#C9A65A',
+                shape:'dot',
+                gravity:-0.015, glow:true
               }
             ));
           }, j*28);
@@ -4292,18 +4242,18 @@ setLang(currentLang);
         {
           vx:(Math.random()-0.5)*0.5,
           vy:-0.5-Math.random()*0.8,
-          decay:0.006+Math.random()*0.006,
-          r:0.8+Math.random()*2,
-          color:Math.random()>0.5?'#FFD580':'#FFFAE8',
-          shape:Math.random()>0.55?'star':'dot',
-          gravity:-0.01, glow:true
+          decay:0.005+Math.random()*0.014,
+          r:0.4+Math.pow(Math.random(),2)*2.0,
+          color:Math.random()>0.4?'#E9C87C':'#C9A65A',
+          shape:'dot',
+          gravity:-0.008, glow:true
         }
       ));
     }, 40);
 
     /* 最终收尾 */
     setTimeout(function(){
-      flash('0.25', 0.4);
+      flash('0.08', 0.6);
       clearInterval(dust);
       shrineActive = false;
       setTimeout(function(){
