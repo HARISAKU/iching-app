@@ -1407,8 +1407,13 @@ body.golf-mode .eyebrow { color: var(--golf-soft); }
   text-align: left;
 }
 input.g-input, #step-g1 input[type="date"], #step-g1 input[type="time"] {
+  display: block;
   width: 100%;
+  min-width: 0;          /* iOS の date/time 固有幅を無効化し、はみ出しを防ぐ */
+  max-width: 100%;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
   background: var(--card2);
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -1418,6 +1423,16 @@ input.g-input, #step-g1 input[type="date"], #step-g1 input[type="time"] {
   padding: 12px 14px;
   outline: none;
   color-scheme: dark;
+}
+/* iOS Safari：date/time の内部コンテナも枠内に収める */
+#step-g1 input[type="date"]::-webkit-date-and-time-value,
+#step-g1 input[type="time"]::-webkit-date-and-time-value {
+  text-align: center;
+  margin: 0;
+}
+#step-g1 input[type="date"]::-webkit-calendar-picker-indicator,
+#step-g1 input[type="time"]::-webkit-calendar-picker-indicator {
+  margin-left: auto;
 }
 input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
 #step-g1 textarea {
