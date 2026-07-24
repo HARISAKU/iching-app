@@ -24,6 +24,8 @@
   --vermil:   #C24238;
   --gold:     #C9A65A;
   --light:    #2C251A;
+  --golf-deep: #2C4438;   /* 千歳緑・深（Golf場面強調色 方案B） */
+  --golf-soft: #5C8471;   /* 千歳緑・淡 */
   --f-serif:  "Noto Serif JP","Hiragino Mincho ProN","Yu Mincho","游明朝",serif;
   --f-sans:   "Hiragino Sans","Noto Sans JP","Yu Gothic","游ゴシック",sans-serif;
   /* 中文標點靠左下（統一於日文/英文慣例）：
@@ -1337,6 +1339,283 @@ body.lang-zh h2 {
   content:""; position:absolute; inset:3px; border-radius:50%; background:var(--vermil);
 }
 
+
+/* ════════════════════════════════════════════
+   GOLF MODE ── 千歳緑 · 遠山 · 球道の弧
+   緑は大面積低輝度の背景要素のみ、文字とボタンは既存の暖金
+   ════════════════════════════════════════════ */
+
+/* ── 首頁側門：遠山の入口 ── */
+.golf-entry {
+  margin-top: 34px;
+  padding-top: 4px;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.golf-entry::before {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 1px;
+  margin: 0 auto 18px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+.golf-entry svg { display: block; margin: 0 auto 8px; opacity: .85; }
+.golf-entry .golf-entry-text {
+  font-family: var(--f-serif);
+  font-size: 13px;
+  letter-spacing: .18em;
+  color: var(--soft);
+  transition: color .5s ease;
+}
+.golf-entry:hover .golf-entry-text { color: var(--golf-soft); }
+
+/* ── Golf 場面の共通語彙 ── */
+body.golf-mode .eyebrow { color: var(--golf-soft); }
+
+.g-divider {
+  width: 160px;
+  height: 1px;
+  margin: 26px auto;
+  background: linear-gradient(90deg, transparent, var(--golf-deep), transparent);
+  opacity: .8;
+}
+
+/* 遠山剪影：場面下端に静かに座る */
+.g-mountains {
+  display: block;
+  margin: 30px auto 0;
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* 球道の弧：eyebrow 下の細い弧線 */
+.g-arc {
+  display: block;
+  margin: 6px auto 18px;
+  opacity: .6;
+}
+
+/* ── 今日の一局 入力 ── */
+.g-field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: .12em;
+  margin: 20px 0 8px;
+  text-align: left;
+}
+input.g-input, #step-g1 input[type="date"], #step-g1 input[type="time"] {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--f-serif);
+  font-size: 16px;
+  padding: 12px 14px;
+  outline: none;
+  color-scheme: dark;
+}
+input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
+#step-g1 textarea {
+  min-height: 92px;
+}
+
+/* ── 起卦二択：並列・無優先 ── */
+.g-cast-choice {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--f-serif);
+  transition: border-color .4s ease, background .4s ease;
+}
+.g-cast-choice:hover { border-color: var(--gold); }
+.g-cast-choice .g-cast-title {
+  display: block;
+  font-size: 17px;
+  letter-spacing: .1em;
+  margin-bottom: 6px;
+}
+.g-cast-choice .g-cast-desc {
+  display: block;
+  font-size: 12.5px;
+  color: var(--soft);
+  line-height: 1.7;
+}
+
+/* ── 卦象揭曉（step-g5）：既存の揭曉動效を共用 ── */
+#step-g5.active .hexagram { animation: hexEmerge 2.4s cubic-bezier(.22,.61,.36,1); }
+#step-g5.active .line,
+#step-g5.active .line.broken::before,
+#step-g5.active .line.broken::after { animation: lineGlow 3s ease-out; }
+
+/* ── 策略字：卦と同じ画面の主役。卦の呼吸のあと、一拍おいて現れる ── */
+.g-word {
+  font-family: var(--f-serif);
+  font-size: 84px;
+  line-height: 1.15;
+  color: var(--gold);
+  text-align: center;
+  margin: 22px 0 4px;
+  text-shadow: 0 0 30px rgba(201,166,90,.28);
+  opacity: 0;
+}
+#step-g5.active .g-word {
+  animation: gWordEmerge 2.2s cubic-bezier(.22,.61,.36,1) .9s forwards;
+}
+#step-g5.active .g-word-line {
+  opacity: 0;
+  animation: gWordEmerge 1.8s ease-out 1.5s forwards;
+}
+@keyframes gWordEmerge {
+  0%   { opacity: 0; filter: blur(8px); transform: scale(.96); }
+  55%  { opacity: 1; filter: blur(1px); }
+  100% { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+.g-word-line { margin-bottom: 18px; }
+.g-word-line {
+  text-align: center;
+  font-family: var(--f-serif);
+  font-size: 15px;
+  color: var(--muted);
+  letter-spacing: .06em;
+  line-height: 1.9;
+  margin-bottom: 6px;
+}
+
+/* 主站への橋 */
+.g-bridge {
+  margin-top: 30px;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.g-bridge::before {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 1px;
+  margin: 0 auto 16px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+.g-bridge .g-bridge-text {
+  font-family: var(--f-serif);
+  font-size: 14px;
+  letter-spacing: .16em;
+  color: var(--soft);
+  transition: color .5s ease;
+}
+.g-bridge:hover .g-bridge-text { color: var(--accent); }
+.g-bridge .g-bridge-arrow {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--soft);
+  opacity: .7;
+}
+
+/* 静かな退出リンク（g0） */
+.g-exit-link {
+  display: block;
+  margin-top: 26px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--soft);
+  cursor: pointer;
+  opacity: .75;
+}
+.g-exit-link:hover { color: var(--muted); }
+
+/* ── 虛擬投骰 overlay ── */
+/* ── 招待コード modal / 読み解き panel ── */
+#golfCodeModal, #golfPromptPanel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,8,5,.86);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.g-modal-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 26px 22px;
+  box-sizing: border-box;
+}
+.g-modal-title {
+  font-family: var(--f-serif);
+  font-size: 17px;
+  color: var(--ink);
+  text-align: center;
+  letter-spacing: .1em;
+  margin-bottom: 12px;
+}
+.g-modal-hint {
+  font-size: 12.5px;
+  color: var(--soft);
+  text-align: center;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+#gCodeInput {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 15px;
+  letter-spacing: .08em;
+  padding: 12px 14px;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  margin-bottom: 16px;
+}
+#gCodeInput:focus { border-color: var(--gold); }
+.g-panel-box {
+  width: 100%;
+  max-width: 520px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px 20px;
+  box-sizing: border-box;
+}
+#gPanelText {
+  flex: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: var(--f-serif);
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--muted);
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
 </style>
 </head>
 
@@ -1399,6 +1678,15 @@ body.lang-zh h2 {
       onclick="showStep('flow')" data-i18n="firstTime_btn">
       儀式の流れを見る
     </button>
+  </div>
+
+  <!-- 側門：遠山の入口 ── 首頁で唯一の緑、気づいた人だけの風景 -->
+  <div class="golf-entry" onclick="enterGolfMode(true)">
+    <svg width="150" height="30" viewBox="0 0 150 30">
+      <path d="M0 30 L30 8 L54 24 L76 4 L102 20 L126 10 L150 30 Z" fill="var(--golf-deep)" opacity=".6"/>
+      <path d="M0 30 L44 18 L80 27 L116 15 L150 30 Z" fill="var(--golf-soft)" opacity=".16"/>
+    </svg>
+    <span class="golf-entry-text" data-i18n="g_home_entry">コースの一局を観る</span>
   </div>
 </section>
 
@@ -1684,6 +1972,151 @@ line-height:1.9;
 
 </section>
 
+<!-- ════════════ GOLF MODE ・ ①〜⑦ ════════════ -->
+
+<section class="step" id="step-g0">
+  <div class="eyebrow" data-i18n="g0_eyebrow">一局一卦</div>
+
+  <div class="lang-switch">
+    <button class="lang-btn g-lang-ja" onclick="setLang('ja')">日本語</button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn g-lang-zh" onclick="setLang('zh-Hant-TW')">中文</button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn g-lang-en" onclick="setLang('en')">EN</button>
+  </div>
+  <svg class="g-arc" width="120" height="14" viewBox="0 0 120 14"><path d="M2 12 Q60 -6 118 12" fill="none" stroke="var(--golf-deep)" stroke-width="1"/></svg>
+
+  <div class="primary-copy" data-i18n="g0_p1">一局に、一卦。</div>
+  <div class="secondary-copy">
+    <span data-i18n="g0_p2">卦が観るのは、この一局の完全な勢。</span><br><br>
+    <span data-i18n="g0_p3">卦が成れば、本局では再び立てません。</span>
+  </div>
+
+  <button onclick="showStep('g1')" data-i18n="g0_start">儀式を始める</button>
+
+  <span class="g-exit-link" onclick="exitGolfMode()" data-i18n="g0_exit">← KIZASHI 本站へ</span>
+
+  <svg class="g-mountains" width="240" height="44" viewBox="0 0 240 44">
+    <path d="M0 44 L46 12 L84 34 L120 6 L162 30 L200 14 L240 44 Z" fill="var(--golf-deep)" opacity=".55"/>
+    <path d="M0 44 L70 26 L126 40 L180 22 L240 44 Z" fill="var(--golf-soft)" opacity=".18"/>
+  </svg>
+</section>
+
+<section class="step" id="step-g1">
+  <div class="eyebrow" data-i18n="g1_eyebrow">今日の一局</div>
+  <div class="primary-copy" data-i18n="g1_p1">この一局の、状態と流れと勢を観る。</div>
+
+  <label class="g-field-label" data-i18n="g1_course_label">コース</label>
+  <input type="text" class="g-input" id="gCourse" data-i18n="g1_course_ph" placeholder="コース名を入力">
+
+  <label class="g-field-label" data-i18n="g1_date_label">開球日</label>
+  <input type="date" id="gDate">
+
+  <label class="g-field-label" data-i18n="g1_time_label">開球時刻</label>
+  <input type="time" id="gTime">
+
+  <label class="g-field-label" data-i18n="g1_note_label">この一局で、気に掛かることは？（任意）</label>
+  <textarea id="gNotes" data-i18n="g1_note_ph_all" rows="5" placeholder="例：
+・直近3ラウンド調子が安定せず、ドライバーを調整中
+・今日は、いつも負けている友人とのマッチプレー
+・初めてのコース。狭いフェアウェイが少し不安
+・プロテストを想定した練習ラウンド"></textarea>
+
+  <button onclick="golfSaveContext()" data-i18n="g1_next">起卦へ</button>
+  <button class="secondary" onclick="showStep('g0')" data-i18n="g2_back">戻る</button>
+</section>
+
+<section class="step" id="step-g2">
+  <div class="eyebrow" data-i18n="g2_eyebrow">起卦</div>
+  <div class="primary-copy" data-i18n="g2_p1">起卦の方法を選んでください</div>
+  <div class="g-divider"></div>
+
+  <button type="button" class="g-cast-choice" onclick="showStep('g3')">
+    <span class="g-cast-title" data-i18n="g2_dice_btn">実物のサイコロで</span>
+    <span class="g-cast-desc" data-i18n="g2_dice_desc">手元のKIZASHIサイコロを投げ、結果を入力</span>
+  </button>
+
+  <button type="button" class="g-cast-choice" onclick="golfVirtualCast()">
+    <span class="g-cast-title" data-i18n="g2_virtual_btn">この場で投じる</span>
+    <span class="g-cast-desc" data-i18n="g2_virtual_desc">三つのサイコロを、この瞬間に委ねる</span>
+  </button>
+
+  <button class="secondary" onclick="showStep('g1')" data-i18n="g2_back">戻る</button>
+</section>
+
+<section class="step" id="step-g3">
+  <div class="eyebrow" data-i18n="dice_eyebrow">入力</div>
+  <h2 data-i18n="dice_h2">サイコロの結果を入力</h2>
+
+  <div class="notice">
+    <span data-i18n="dice_notice">その問いを心に思い浮かべながら。<br>ゆっくり息を吸い、ゆっくりと吐きます。<br><br>息を吐き切り、<br>次の息を吸う、その瞬間に——<br><br>サイコロを投げます。</span>
+  </div>
+
+  <label data-i18n="dice_upper_label">黒い八面体サイコロ：上卦</label>
+  <select id="gUpper"></select>
+
+  <label data-i18n="dice_lower_label">赤い八面体サイコロ：下卦</label>
+  <select id="gLower"></select>
+
+  <label data-i18n="dice_moving_label">六面体サイコロ：動爻</label>
+  <select id="gMoving">
+    <option value="1">初</option>
+    <option value="2">二</option>
+    <option value="3">三</option>
+    <option value="4">四</option>
+    <option value="5">五</option>
+    <option value="6">上</option>
+  </select>
+
+  <button class="secondary" onclick="showStep('g2')" data-i18n="dice_back">戻る</button>
+  <button onclick="golfConfirmDiceInput()" data-i18n="dice_next">次へ：結果を確認</button>
+</section>
+
+<section class="step" id="step-g4">
+  <div class="eyebrow" data-i18n="confirm_eyebrow">確認</div>
+  <h2 data-i18n="confirm_h2">サイコロの結果を確認</h2>
+
+  <div class="secondary-copy" data-i18n="confirm_p1">投じた結果を確認してください。<br>問題なければ卦象を表示します。</div>
+
+  <div class="question-box">
+    <div class="question-main" id="gConfirmDice"></div>
+  </div>
+
+  <button class="secondary" onclick="showStep('g3')" data-i18n="confirm_back">戻って修正</button>
+  <button onclick="golfManualCast()" data-i18n="confirm_ok">確認完了、卦象を見る</button>
+</section>
+
+<section class="step" id="step-g5">
+  <div class="eyebrow" data-i18n="g5_eyebrow">この一局の卦</div>
+
+  <div class="hexagram">
+    <div class="hex-lines" id="gHexLines"></div>
+    <div class="gua-name">
+      <span class="gua-glyph" id="gGuaGlyph"></span>
+    </div>
+    <span class="gua-label" id="gGuaLabel"></span>
+    <div class="meta" id="gGuaMeta"></div>
+    <div class="meta" id="gMovingLine" style="margin-top:8px; color:var(--vermil);"></div>
+    <div class="meta" id="gTeeLine" style="margin-top:10px; line-height:1.9;"></div>
+  </div>
+
+  <div class="g-word" id="gWord"></div>
+  <div class="g-word-line" id="gWordLine"></div>
+
+  <button onclick="requestGuaImage()" data-i18n="img_btn">卦影を生成</button>
+  <button class="secondary" onclick="golfOpenReading()" data-i18n="g6_read_btn">この一局を読み解く</button>
+
+  <div class="g-bridge" onclick="exitGolfMode()">
+    <span class="g-bridge-text" data-i18n="g6_bridge">人生にも、局がある。</span>
+    <span class="g-bridge-arrow">KIZASHI →</span>
+  </div>
+
+  <svg class="g-mountains" width="240" height="44" viewBox="0 0 240 44">
+    <path d="M0 44 L46 12 L84 34 L120 6 L162 30 L200 14 L240 44 Z" fill="var(--golf-deep)" opacity=".55"/>
+    <path d="M0 44 L70 26 L126 40 L180 22 L240 44 Z" fill="var(--golf-soft)" opacity=".18"/>
+  </svg>
+</section>
+
 </div>
 </main>
 
@@ -1783,6 +2216,30 @@ line-height:1.9;
 </div>
 
 
+
+<!-- ════ Golf：虛擬投骰 ── 一次性に三顆を投じる ════ -->
+<!-- ════ Golf：招待コード ════ -->
+<div id="golfCodeModal">
+  <div class="g-modal-box">
+    <div class="g-modal-title" data-i18n="g_code_title">招待コード</div>
+    <div class="g-modal-hint" data-i18n="g_code_hint">現在は内輪テスト中。コードをお持ちの方のみ。</div>
+    <input type="text" id="gCodeInput" placeholder="KIZASHI-GOLF-XXX" autocomplete="off">
+    <button onclick="golfCodeSubmit()" data-i18n="g_code_go">解卦する</button>
+    <button class="secondary" onclick="golfCodeCancel()" data-i18n="g_code_back">戻る</button>
+  </div>
+</div>
+
+<!-- ════ Golf：読み解きプロンプト panel（将来 Stripe+API に差し替える插口） ════ -->
+<div id="golfPromptPanel">
+  <div class="g-panel-box">
+    <div class="g-modal-title" data-i18n="g_panel_title">この一局の読み解き</div>
+    <div class="g-modal-hint" data-i18n="g_panel_hint">プロンプトをコピーしました。お使いのAIに貼り付けてください。</div>
+    <div id="gPanelText"></div>
+    <button onclick="golfPanelCopy()" data-i18n="g_panel_copy">もう一度コピー</button>
+    <button class="secondary" onclick="golfPanelClose()" data-i18n="g_panel_close">閉じる</button>
+  </div>
+</div>
+
 <script>
 const BAGUA = {
   "乾":[1,1,1],
@@ -1874,6 +2331,11 @@ function initSelects() {
   const options = Object.keys(BAGUA).map(k => `<option value="${k}">${k}</option>`).join("");
   document.getElementById("manualUpper").innerHTML = options;
   document.getElementById("manualLower").innerHTML = options;
+  /* Golf 模式のサイコロ入力（同じ八卦選択肢を共用） */
+  const gu = document.getElementById("gUpper");
+  const gl = document.getElementById("gLower");
+  if (gu) gu.innerHTML = options;
+  if (gl) gl.innerHTML = options;
 }
 
 /* 底部漸隱暗示：僅在類別選擇頁且視野下方仍有內容時顯現 */
@@ -2282,18 +2744,14 @@ function randomBagua() {
   return keys[Math.floor(Math.random() * keys.length)];
 }
 
-function randomCast() {
-  const result = generateGua({
-    upper:randomBagua(),
-    lower:randomBagua(),
-    movingLine:Math.floor(Math.random() * 6) + 1
-  });
-
+/* 六爻顕現アニメーション（逐一浮現・先断後連 → 漩渦収縮 → 過渡）。
+   本站の乱数起卦と Golf の虛擬投骰で共用する。 */
+function playYaoCastAnimation(onDone) {
   const overlay = document.getElementById('castingOverlay');
 
   // 如果找不到overlay（预览环境限制），直接跳到结果
   if (!overlay) {
-    renderResult(result);
+    onDone();
     return;
   }
 
@@ -2369,10 +2827,19 @@ function randomCast() {
         el.style.transform = '';
       });
       // 接入与"确认无误，查看卦象"相同的过渡动画
-      playGuaTransition(() => renderResult(result));
+      playGuaTransition(onDone);
     }, dur + 150);
 
   }, swirlStart);
+}
+
+function randomCast() {
+  const result = generateGua({
+    upper:randomBagua(),
+    lower:randomBagua(),
+    movingLine:Math.floor(Math.random() * 6) + 1
+  });
+  playYaoCastAnimation(() => renderResult(result));
 }
 
 function confirmDiceInput() {
@@ -3657,6 +4124,28 @@ async function generateGuaImage(includeUserText) {
       if (draw) ctx.fillText(`${t("rec_moving")} · ${r.movingLineName}`, cx, y);
       y += 40;
 
+      /* ── Golf：策略字は卦影の視覚焦点（傳播漏斗の核、無料） ── */
+      if (golfMode) {
+        const gwImg = GOLF_WORDS[base.id];
+        if (gwImg) {
+          guaImgDivider(draw ? ctx : measure, cx, draw ? y : 0, 120); y += 36;
+          ctx.font = guaImgFont(92, 500);
+          ctx.fillStyle = GUAIMG.gold;
+          ctx.textAlign = "center";
+          if (draw) {
+            ctx.save();
+            ctx.shadowColor = "rgba(201,166,90,.32)";
+            ctx.shadowBlur = 26;
+            ctx.fillText(gwImg.w, cx, y);
+            ctx.restore();
+          }
+          y += 112;
+          ctx.font = guaImgFont(14, 400);
+          ctx.fillStyle = GUAIMG.muted;
+          y = guaImgWrapTextCentered(ctx, golfWordLine(base.id), cx, y, CONTENT_W, 24, draw) + 28;
+        }
+      }
+
       if (mode === "full") {
         /* ── 御神籤式正文：全部經文連書成一塊寬幅文字場 ──
            【標題】金色嵌入行文，正文墨色，直行右起連續分列 */
@@ -3703,26 +4192,31 @@ async function generateGuaImage(includeUserText) {
         y += 36;
       }
 
-      /* 所問（用戶現代文字，橫排居中） */
-      const concernShow = (includeUserText && concern)
-        ? concern
-        : `${selectedIntent}｜${selectedCategory}`;
+      /* 所問（用戶現代文字，橫排居中）／ Golf：球場名＋（任意で）留意事項 */
+      const concernShow = golfMode
+        ? golfCourse
+        : ((includeUserText && concern) ? concern : `${selectedIntent}｜${selectedCategory}`);
       guaImgDivider(draw ? ctx : measure, cx, draw ? y : 0, 220); y += 26;
       ctx.textAlign = "center";
       ctx.font = guaImgFont(13, 400);
       ctx.fillStyle = GUAIMG.gold;
-      if (draw) ctx.fillText(t("img_concern_label"), cx, y);
+      if (draw) ctx.fillText(t(golfMode ? "g_img_round_label" : "img_concern_label"), cx, y);
       y += 24;
       ctx.font = guaImgFont(15, 400);
       ctx.fillStyle = GUAIMG.ink;
       y = guaImgWrapTextCentered(ctx, concernShow, cx, y, CONTENT_W, 27, draw) + 22;
+      if (golfMode && includeUserText && concern) {
+        ctx.font = guaImgFont(13, 400);
+        ctx.fillStyle = GUAIMG.muted;
+        y = guaImgWrapTextCentered(ctx, concern, cx, y - 10, CONTENT_W, 24, draw) + 22;
+      }
 
       /* 占時 */
       guaImgDivider(draw ? ctx : measure, cx, draw ? y : 0, 220); y += 26;
       ctx.textAlign = "center";
       ctx.font = guaImgFont(13, 400);
       ctx.fillStyle = GUAIMG.gold;
-      if (draw) ctx.fillText(t("img_time_label"), cx, y);
+      if (draw) ctx.fillText(t(golfMode ? "g_img_tee_label" : "img_time_label"), cx, y);
       y += 24;
       ctx.font = guaImgFont(14, 400);
       ctx.fillStyle = GUAIMG.muted;
@@ -3804,7 +4298,7 @@ async function generateGuaImage(includeUserText) {
       const dateStr = r.castTime
         ? `${r.castTime.getFullYear()}${String(r.castTime.getMonth()+1).padStart(2,"0")}${String(r.castTime.getDate()).padStart(2,"0")}`
         : "";
-      const filename = `kizashi_${base.id}_${dateStr}.png`;
+      const filename = `kizashi_${golfMode ? "golf_" : ""}${base.id}_${dateStr}.png`;
       const file = new File([blob], filename, { type: "image/png" });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -3899,6 +4393,76 @@ function toast(msg) {
    ════════════════════════════════════ */
 
 const LANG_DATA = {
+
+  /* ══════════ GOLF MODE ══════════ */
+  g_home_entry:   { ja: "コースの一局を観る", zh: "觀一局於球場", en: "Read a round on the course" },
+
+  g0_eyebrow:     { ja: "一局一卦", zh: "一輪一卦", en: "One Round, One Hexagram" },
+  g0_p1:          { ja: "一局に、一卦。", zh: "一輪，一卦。", en: "One round, one hexagram." },
+  g0_p2:          { ja: "卦が観るのは、この一局の完全な勢。", zh: "卦象觀察的，是這一輪完整的勢。", en: "The hexagram reads the shi — the whole momentum of this round." },
+  g0_p3:          { ja: "卦が成れば、本局では再び立てません。", zh: "卦成之後，本輪不再重起。", en: "Once cast, it is not cast again this round." },
+  g0_start:       { ja: "儀式を始める", zh: "開始儀式", en: "Begin the Ritual" },
+  g0_exit:        { ja: "← KIZASHI 本站へ", zh: "← 回到 KIZASHI 主站", en: "← KIZASHI main site" },
+
+  g1_eyebrow:       { ja: "今日の一局", zh: "今日之局", en: "Today's Round" },
+  g1_p1:            { ja: "この一局の、状態と流れと勢を観る。", zh: "觀察這一輪的狀態、節奏與勢。", en: "Observing the state, rhythm and momentum of this round." },
+  g1_course_label:  { ja: "コース", zh: "球場", en: "Course" },
+  g1_course_ph:     { ja: "コース名を入力", zh: "輸入球場名稱", en: "Enter course name" },
+  g1_date_label:    { ja: "開球日", zh: "開球日期", en: "Tee date" },
+  g1_time_label:    { ja: "開球時刻", zh: "開球時間", en: "Tee time" },
+  g1_note_label:    { ja: "この一局で、気に掛かることは？（任意）", zh: "此輪還有什麼值得留意？（選填）", en: "Anything on your mind for this round? (optional)" },
+  g1_note_ph_all:   {
+    ja: "例：\n・直近3ラウンド調子が安定せず、ドライバーを調整中\n・今日は、いつも負けている友人とのマッチプレー\n・初めてのコース。狭いフェアウェイが少し不安\n・プロテストを想定した練習ラウンド",
+    zh: "例如：\n・最近三場狀態不穩，正在調整一號木\n・今天和一位經常輸給他的朋友打比洞\n・第一次打這個球場，擔心狹窄球道\n・這是一次職業模擬賽",
+    en: "e.g.\n- Inconsistent last three rounds, reworking my driver\n- Match play today against a friend I usually lose to\n- First time on this course, worried about tight fairways\n- A simulated professional round"
+  },
+  g1_note_ph1:      { ja: "直近3ラウンド調子が安定せず、ドライバーを調整中", zh: "最近三場狀態不穩，正在調整一號木", en: "Inconsistent last three rounds — reworking my driver" },
+  g1_note_ph2:      { ja: "今日は、いつも負けている友人とのマッチプレー", zh: "今天和一位經常輸給他的朋友打比洞", en: "Match play today against a friend I usually lose to" },
+  g1_note_ph3:      { ja: "初めてのコース。狭いフェアウェイが少し不安", zh: "第一次打這個球場，擔心狹窄球道", en: "First time on this course — worried about tight fairways" },
+  g1_note_ph4:      { ja: "プロテストを想定した練習ラウンド", zh: "這是一次職業模擬賽", en: "A simulated professional round" },
+  g1_next:          { ja: "起卦へ", zh: "前往起卦", en: "Continue to casting" },
+  g1_course_required: { ja: "コース名を入力してください", zh: "請輸入球場名稱", en: "Please enter the course name" },
+
+  g2_eyebrow:      { ja: "起卦", zh: "起卦", en: "Casting" },
+  g2_p1:           { ja: "起卦の方法を選んでください", zh: "選擇起卦方式", en: "Choose how to cast" },
+  g2_dice_btn:     { ja: "実物のサイコロで", zh: "使用實體骰子", en: "With physical dice" },
+  g2_dice_desc:    { ja: "手元のKIZASHIサイコロを投げ、結果を入力", zh: "投擲手中的KIZASHI骰子，輸入結果", en: "Throw your KIZASHI dice and enter the result" },
+  g2_virtual_btn:  { ja: "この場で投じる", zh: "就地虛擬投骰", en: "Cast here, virtually" },
+  g2_virtual_desc: { ja: "三つのサイコロを、この瞬間に委ねる", zh: "將三顆骰子交給此刻", en: "Entrust three dice to this moment" },
+  g2_back:         { ja: "戻る", zh: "返回", en: "Back" },
+
+  g_dice_caption:  { ja: "この瞬間に委ねる", zh: "交給此刻", en: "Entrusted to this moment" },
+
+  g5_eyebrow:    { ja: "この一局の卦", zh: "此局之卦", en: "The Hexagram of This Round" },
+  g5_tee_label:  { ja: "開球", zh: "開球", en: "Tee off" },
+  g5_word_btn:   { ja: "策の字を観る", zh: "觀策略之字", en: "See the strategy word" },
+
+  g6_eyebrow:    { ja: "策", zh: "策", en: "Strategy" },
+  g6_read_btn:   { ja: "この一局を読み解く", zh: "解讀此局", en: "Read this round" },
+  g6_bridge:     { ja: "人生にも、局がある。", zh: "人生，亦有局。", en: "Life, too, has its rounds." },
+
+  g_code_title:  { ja: "招待コード", zh: "邀請碼", en: "Invitation Code" },
+  g_code_hint:   { ja: "現在は内輪テスト中。コードをお持ちの方のみ。", zh: "目前為內測階段，僅限持碼者使用。", en: "Currently in private beta — invitation code required." },
+  g_code_go:     { ja: "解卦する", zh: "解卦", en: "Unlock" },
+  g_code_back:   { ja: "戻る", zh: "返回", en: "Back" },
+  g_code_wrong:  { ja: "コードが一致しません", zh: "邀請碼不正確", en: "Invalid code" },
+
+  g_panel_title: { ja: "この一局の読み解き", zh: "此局解讀", en: "Reading of This Round" },
+  g_panel_hint:  { ja: "プロンプトをコピーしました。お使いのAIに貼り付けてください。", zh: "提示詞已複製，請貼給你常用的 AI。", en: "Prompt copied — paste it into your AI of choice." },
+  g_panel_copy:  { ja: "もう一度コピー", zh: "再次複製", en: "Copy again" },
+  g_panel_close: { ja: "閉じる", zh: "關閉", en: "Close" },
+
+  g_img_round_label: { ja: "今日の一局", zh: "今日之局", en: "Today's Round" },
+  g_img_tee_label:   { ja: "開球の刻", zh: "開球之時", en: "Tee Time" },
+
+  gp_title:      { ja: "【KIZASHI Golf｜この一局の卦】", zh: "【KIZASHI Golf｜此局之卦】", en: "[KIZASHI Golf | The Hexagram of This Round]" },
+  gp_note_label: { ja: "留意事項", zh: "留意事項", en: "Notes" },
+  gp_word_label: { ja: "策略字", zh: "策略字", en: "Strategy word" },
+  gp_instruction: {
+    ja: "あなたは易の理に通じた、落ち着いたゴルフの相談役です。上記の卦・動爻・策略字を軸として、コースと留意事項を踏まえ、この一局の進め方——序盤・中盤・終盤の節奏、そして心の持ち方——を穏やかに助言してください。スイング技術の具体的な指導はしないでください。吉凶で脅すこともしないでください。口調は抑制的に、温かく。開球前に読み切れる分量で。",
+    zh: "你是一位通曉易理、語氣沉穩的高爾夫顧問。請以上述卦象、動爻與策略字為綱，結合球場與留意事項，給出這一輪的節奏安排（前段・中段・後段）與心態建議。不要給具體揮桿技術指導，不做吉凶恐嚇。口吻克制溫和，篇幅以開球前能讀完為宜。",
+    en: "You are a calm golf advisor versed in the I Ching. Using the hexagram, moving line and strategy word above as your frame — and taking the course and notes into account — advise on the pacing of this round (early, middle, closing holes) and the state of mind to hold. Do not give specific swing mechanics. Do not threaten with fortune or doom. Keep the tone restrained and warm, short enough to read before teeing off."
+  },
 
   /* ── Step 0: Home ── */
   startBtn_loading:   { ja: "データ読み込み中...", zh: "資料載入中...", en: "Loading data..." },
@@ -4137,6 +4701,9 @@ function setLang(lang) {
   document.getElementById('langBtnJa').classList.toggle('active', lang === 'ja');
   document.getElementById('langBtnZh').classList.toggle('active', lang === 'zh-Hant-TW');
   document.getElementById('langBtnEn').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('.g-lang-ja').forEach(b => b.classList.toggle('active', lang === 'ja'));
+  document.querySelectorAll('.g-lang-zh').forEach(b => b.classList.toggle('active', lang === 'zh-Hant-TW'));
+  document.querySelectorAll('.g-lang-en').forEach(b => b.classList.toggle('active', lang === 'en'));
 
   /* 重新渲染所有带 data-i18n 的元素 */
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -5416,6 +5983,315 @@ function gicGo(){
   document.getElementById('guaImgConfirm').style.display = 'none';
   generateGuaImage(gicInclude);
 }
+
+
+/* ════════════════════════════════════════════════════════════
+   GOLF MODE ── Phase 0
+   ?mode=golf が正門、首頁の遠山が側門、g6 の橋が主站への銭路。
+   共有：generateGua / randomBagua / ganZhiOf / playGuaTransition /
+        卦影生成器（generateGuaImage）/ gic 確認ダイアログ / i18n
+   ════════════════════════════════════════════════════════════ */
+
+/* 策略字データ（原文どおり、字と句は改変しない） */
+const GOLF_WORDS = {1:{n:"乾为天",w:"攻",l:"正面进攻，直取目标"},2:{n:"坤为地",w:"从",l:"别抢开局，跟住节奏"},3:{n:"水雷屯",w:"稳",l:"开局别贪，先站稳"},4:{n:"山水蒙",w:"问",l:"看不清就问，别自作主张"},5:{n:"水天需",w:"等",l:"时机未到不出杆"},6:{n:"天水讼",w:"让",l:"别跟球场较劲"},7:{n:"地水师",w:"律",l:"按自己的节奏纪律打"},8:{n:"水地比",w:"合",l:"跟对同组，借队友的势"},9:{n:"风天小畜",w:"蓄",l:"出不了大杆，先攒手感"},10:{n:"天泽履",w:"慎",l:"险球位，按规矩来"},11:{n:"地天泰",w:"展",l:"顺风顺水，放开打"},12:{n:"天地否",w:"收",l:"今天不对劲，保平安"},13:{n:"天火同人",w:"同",l:"和同组处好，气顺球顺"},14:{n:"火天大有",w:"盛",l:"状态巅峰，享受它"},15:{n:"地山谦",w:"守",l:"别攻旗，谦者保帕"},16:{n:"雷地豫",w:"乐",l:"放松打，但别得意忘形"},17:{n:"泽雷随",w:"顺",l:"跟着球场走，别对抗"},18:{n:"山风蛊",w:"修",l:"挥杆出毛病，回炉基本功"},19:{n:"地泽临",w:"临",l:"手感来了，稳稳压住场面"},20:{n:"风地观",w:"观",l:"先读透果岭再说"},21:{n:"火雷噬嗑",w:"断",l:"别绕，正面处理麻烦"},22:{n:"山火贲",w:"饰",l:"动作好看，更要打得实"},23:{n:"山地剥",w:"忍",l:"崩了别硬救，止损为先"},24:{n:"地雷复",w:"回",l:"找回自己的挥杆节奏"},25:{n:"天雷无妄",w:"真",l:"按平常心打，别耍花招"},26:{n:"山天大畜",w:"积",l:"厚积手感，大赛再发"},27:{n:"山雷颐",w:"养",l:"吃好睡好，状态自来"},28:{n:"泽风大过",w:"减",l:"别硬扛，减负荷打"},29:{n:"坎为水",w:"定",l:"连续困境，心不能乱"},30:{n:"离为火",w:"明",l:"看清落点，再挂目标"},31:{n:"泽山咸",w:"感",l:"跟球场对话，凭直觉"},32:{n:"雷风恒",w:"恒",l:"坚持自己的打法"},33:{n:"天山遯",w:"退",l:"今天状态离场，及时收手"},34:{n:"雷天大壮",w:"节",l:"有距离更要控制力道"},35:{n:"火地晋",w:"进",l:"状态在爬升，一杆一杆推"},36:{n:"地火明夷",w:"藏",l:"别秀，闷声打好每一杆"},37:{n:"风火家人",w:"齐",l:"稳住基本盘，别乱阵脚"},38:{n:"火泽睽",w:"和",l:"和球僮球友别较劲，小处配合"},39:{n:"水山蹇",w:"停",l:"难打就停一拍，找人商量"},40:{n:"雷水解",w:"快",l:"僵局已解，趁势提速"},41:{n:"山泽损",w:"舍",l:"舍距离换球道，值"},42:{n:"风雷益",w:"乘",l:"风向对了，果断加码"},43:{n:"泽天夬",w:"决",l:"最后几洞，果断收割"},44:{n:"天风姤",w:"警",l:"小失误冒头，立刻纠正"},45:{n:"泽地萃",w:"聚",l:"把状态和人气拢在一起"},46:{n:"地风升",w:"升",l:"一洞一洞垒，别跳步"},47:{n:"泽水困",w:"熬",l:"低谷期，咬住别崩"},48:{n:"水风井",w:"基",l:"回归基本功，井修好水自来"},49:{n:"泽火革",w:"变",l:"打法失灵，换策略"},50:{n:"火风鼎",w:"立",l:"新节奏立住，稳字当头"},51:{n:"震为雷",w:"镇",l:"突发状况，深呼吸再挥"},52:{n:"艮为山",w:"止",l:"该收就收，不追不贪"},53:{n:"风山渐",w:"序",l:"按流程走，一步不跳"},54:{n:"雷泽归妹",w:"耐",l:"手痒也别乱来，守本分"},55:{n:"雷火丰",w:"放",l:"巅峰时刻，尽情发挥"},56:{n:"火山旅",w:"谦",l:"客场作战，姿态放低"},57:{n:"巽为风",w:"柔",l:"顺着风向，柔着来"},58:{n:"兑为泽",w:"悦",l:"享受这场球，笑着打"},59:{n:"风水涣",w:"拢",l:"心散了，用仪式拢回来"},60:{n:"水泽节",w:"控",l:"控制力道，八分刚好"},61:{n:"风泽中孚",w:"信",l:"相信自己的判断"},62:{n:"雷山小过",w:"小",l:"只捡小分，不搏大杆"},63:{n:"水火既济",w:"保",l:"领先局面，守住就赢"},64:{n:"火水未济",w:"续",l:"还没完，下一场再来"}};
+
+/* 表示層：l の三語訳（原データは正典として不変。字 w は漢字のまま不訳） */
+const GOLF_L_I18N = {
+  1:{ja:"正面から攻め、目標を直に狙う",zh:"正面進攻，直取目標",en:"Attack head-on. Go straight at the target."},
+  2:{ja:"序盤は焦らず、流れについていく",zh:"別搶開局，跟住節奏",en:"Don't force the start — follow the rhythm."},
+  3:{ja:"出だしは欲張らず、まず足場を固める",zh:"開局別貪，先站穩",en:"No greed early — find your footing first."},
+  4:{ja:"見えないときは訊く。独断は禁物",zh:"看不清就問，別自作主張",en:"When unsure, ask — don't guess alone."},
+  5:{ja:"時が満ちるまで、クラブを振らない",zh:"時機未到不出桿",en:"Don't swing before the moment is right."},
+  6:{ja:"コースと争わない",zh:"別跟球場較勁",en:"Don't fight the course."},
+  7:{ja:"己のリズムと規律で打つ",zh:"按自己的節奏紀律打",en:"Play your own rhythm, with discipline."},
+  8:{ja:"良き同伴と組み、その勢いを借りる",zh:"跟對同組，借隊友的勢",en:"Stay close to good partners — ride their momentum."},
+  9:{ja:"大技は出ない日。感覚を蓄える",zh:"出不了大桿，先攢手感",en:"No big shots today — bank your feel."},
+  10:{ja:"危険なライは、定石どおりに",zh:"險球位，按規矩來",en:"Tough lie — play it by the book."},
+  11:{ja:"追い風の日。のびのびと打つ",zh:"順風順水，放開打",en:"Everything flows — swing freely."},
+  12:{ja:"今日は噛み合わない。無事を最優先に",zh:"今天不對勁，保平安",en:"Something's off today — play safe."},
+  13:{ja:"同伴と和せば、球も伸びる",zh:"和同組處好，氣順球順",en:"Good company, good flow, good golf."},
+  14:{ja:"絶好調。この時を味わう",zh:"狀態巔峰，享受它",en:"You're peaking — enjoy it."},
+  15:{ja:"ピンは攻めない。謙虚がパーを守る",zh:"別攻旗，謙者保帕",en:"Don't attack the pin — humility saves par."},
+  16:{ja:"楽しんで打つ。ただし調子に乗らない",zh:"放鬆打，但別得意忘形",en:"Relax and play — just don't get cocky."},
+  17:{ja:"コースの流れに従い、逆らわない",zh:"跟著球場走，別對抗",en:"Follow the course — don't resist it."},
+  18:{ja:"スイングに乱れあり。基本に立ち返る",zh:"揮桿出毛病，回爐基本功",en:"Swing's off — go back to basics."},
+  19:{ja:"手応えが来た。落ち着いて場を制する",zh:"手感來了，穩穩壓住場面",en:"The feel is here — take command, calmly."},
+  20:{ja:"まずグリーンを読み切ってから",zh:"先讀透果嶺再說",en:"Read the green fully before anything."},
+  21:{ja:"回り道せず、トラブルは正面から処理",zh:"別繞，正面處理麻煩",en:"Don't go around it — face trouble head-on."},
+  22:{ja:"フォームの美しさより、当たりの確かさ",zh:"動作好看，更要打得實",en:"Pretty swing, sure — but make solid contact."},
+  23:{ja:"崩れたら無理に救わない。まず止血",zh:"崩了別硬救，止損為先",en:"When it collapses, don't force a save — cut losses."},
+  24:{ja:"自分のスイングリズムを取り戻す",zh:"找回自己的揮桿節奏",en:"Find your swing rhythm again."},
+  25:{ja:"平常心で打つ。小細工はしない",zh:"按平常心打，別耍花招",en:"Play it straight — no tricks."},
+  26:{ja:"感覚を厚く蓄え、大一番で放つ",zh:"厚積手感，大賽再發",en:"Store up your feel — unleash it when it counts."},
+  27:{ja:"よく食べ、よく眠る。調子は後から来る",zh:"吃好睡好，狀態自來",en:"Eat well, sleep well — form will follow."},
+  28:{ja:"無理に背負わない。負荷を減らして打つ",zh:"別硬扛，減負荷打",en:"Don't grind — lighten the load."},
+  29:{ja:"困難が続く。心だけは乱さない",zh:"連續困境，心不能亂",en:"Trouble after trouble — keep your mind still."},
+  30:{ja:"落とし所を見極めてから、目標に懸ける",zh:"看清落點，再掛目標",en:"See the landing spot clearly, then commit."},
+  31:{ja:"コースと対話し、直感に委ねる",zh:"跟球場對話，憑直覺",en:"Talk with the course — trust your instinct."},
+  32:{ja:"自分のゴルフを貫く",zh:"堅持自己的打法",en:"Stick to your game."},
+  33:{ja:"今日は調子が去った。潔く引く",zh:"今天狀態離場，及時收手",en:"Your form has left — know when to stop."},
+  34:{ja:"飛ぶ日ほど、力を制御する",zh:"有距離更要控制力道",en:"With power comes the need for control."},
+  35:{ja:"調子は上向き。一打ずつ積み上げる",zh:"狀態在爬升，一桿一桿推",en:"Form is climbing — build it shot by shot."},
+  36:{ja:"見せびらかさず、黙々と一打ずつ",zh:"別秀，悶聲打好每一桿",en:"No showing off — quietly nail each shot."},
+  37:{ja:"基本の型を守り、陣形を崩さない",zh:"穩住基本盤，別亂陣腳",en:"Hold your foundation — don't lose formation."},
+  38:{ja:"キャディや同伴と張り合わず、小さく合わせる",zh:"和球僮球友別較勁，小處配合",en:"Don't clash with caddie or partners — cooperate in the small things."},
+  39:{ja:"難しければ一拍おいて、人に相談を",zh:"難打就停一拍，找人商量",en:"When it's hard, pause a beat and confer."},
+  40:{ja:"膠着は解けた。勢いに乗って速く",zh:"僵局已解，趁勢提速",en:"The deadlock's broken — pick up the pace."},
+  41:{ja:"距離を捨ててフェアウェイを取る。それで良い",zh:"捨距離換球道，值",en:"Trade distance for fairway — worth it."},
+  42:{ja:"風は味方。迷わず攻めを足す",zh:"風向對了，果斷加碼",en:"The wind's right — press the advantage."},
+  43:{ja:"残り数ホール、迷わず刈り取る",zh:"最後幾洞，果斷收割",en:"Final holes — close it out decisively."},
+  44:{ja:"小さなミスの芽は、すぐ摘む",zh:"小失誤冒頭，立刻糾正",en:"A small miss appears — correct it at once."},
+  45:{ja:"調子も人の和も、ひとつに束ねる",zh:"把狀態和人氣攏在一起",en:"Gather your form and your people."},
+  46:{ja:"一ホールずつ積む。段は飛ばさない",zh:"一洞一洞壘，別跳步",en:"Build hole by hole — skip nothing."},
+  47:{ja:"谷の時期。食らいついて崩れない",zh:"低谷期，咬住別崩",en:"In the trough — hang on, don't crack."},
+  48:{ja:"基本に還る。井戸を直せば水は湧く",zh:"回歸基本功，井修好水自來",en:"Return to fundamentals — fix the well, water comes."},
+  49:{ja:"戦い方が効かない。策を変える",zh:"打法失靈，換策略",en:"Your game plan's failing — change strategy."},
+  50:{ja:"新しいリズムを据える。まず安定",zh:"新節奏立住，穩字當頭",en:"Set the new rhythm — steadiness first."},
+  51:{ja:"不測の事態。深呼吸してから振る",zh:"突發狀況，深呼吸再揮",en:"Sudden shock — breathe deep, then swing."},
+  52:{ja:"収めるべき時に収める。追わず、貪らず",zh:"該收就收，不追不貪",en:"Stop when it's time — no chasing, no greed."},
+  53:{ja:"手順どおりに。一歩も飛ばさない",zh:"按流程走，一步不跳",en:"Follow the routine — skip no step."},
+  54:{ja:"打ちたくても暴れない。分をわきまえる",zh:"手癢也別亂來，守本分",en:"Itching to gamble? Don't. Know your place."},
+  55:{ja:"絶頂の時。思い切り解き放つ",zh:"巔峰時刻，盡情發揮",en:"At the summit — let it all out."},
+  56:{ja:"アウェーの戦い。姿勢は低く",zh:"客場作戰，姿態放低",en:"Away game — keep a low posture."},
+  57:{ja:"風に沿って、柔らかく",zh:"順著風向，柔著來",en:"Go with the wind — stay soft."},
+  58:{ja:"このラウンドを楽しむ。笑って打つ",zh:"享受這場球，笑著打",en:"Enjoy the round — play with a smile."},
+  59:{ja:"心が散ったら、儀式で束ね直す",zh:"心散了，用儀式攏回來",en:"Mind scattered? Gather it with ritual."},
+  60:{ja:"力は八分目がちょうどいい",zh:"控制力道，八分剛好",en:"Control the power — eighty percent is perfect."},
+  61:{ja:"自分の判断を信じる",zh:"相信自己的判斷",en:"Trust your own judgment."},
+  62:{ja:"小さく拾う。大勝負はしない",zh:"只撿小分，不搏大桿",en:"Take the small gains — no hero shots."},
+  63:{ja:"リードは守り切れば勝ち",zh:"領先局面，守住就贏",en:"You're ahead — hold it and win."},
+  64:{ja:"まだ終わりじゃない。次の一局へ",zh:"還沒完，下一場再來",en:"It's not over — there's the next round."}
+};
+
+function golfWordLine(id){
+  const tr = GOLF_L_I18N[id];
+  if (!tr) return GOLF_WORDS[id] ? GOLF_WORDS[id].l : "";
+  const lang = currentLang === "zh-Hant-TW" ? "zh" : currentLang;
+  return tr[lang] || tr.ja;
+}
+
+/* ── Golf 状態 ── */
+let golfMode  = false;
+let golfCourse = "";
+let golfNotes  = "";
+const GOLF_CODES = ["KIZASHI-GOLF-001","KIZASHI-GOLF-002","KIZASHI-GOLF-003"];
+
+function golfPad2(n){ return String(n).padStart(2, "0"); }
+
+/* 四柱は開球日時で計算する（前夜に翌日の局を占える） */
+function golfTeeDateTime(){
+  const dv = document.getElementById("gDate")?.value;
+  const tv = document.getElementById("gTime")?.value;
+  if (dv && tv){
+    const [y, m, d] = dv.split("-").map(Number);
+    const [hh, mm]  = tv.split(":").map(Number);
+    const dt = new Date(y, m - 1, d, hh, mm);
+    if (!isNaN(dt.getTime())) return dt;
+  }
+  return new Date();
+}
+
+/* ── モード切替 ──
+   正門：?mode=golf 直達（骰子包装QR用）。
+   側門：首頁の遠山（クリックでURLも ?mode=golf に同期し、
+        以後のリロード・ブックマーク・共有は Golf の世界に留まる）。 */
+function enterGolfMode(pushUrl){
+  golfMode = true;
+  document.body.classList.add("golf-mode");
+  if (pushUrl){
+    try { history.pushState({ kizashiGolf: true }, "", "?mode=golf"); } catch(e){}
+  }
+  /* 開球日時の既定値：今日・次の正時 */
+  const now = new Date();
+  const dEl = document.getElementById("gDate");
+  const tEl = document.getElementById("gTime");
+  if (dEl && !dEl.value) dEl.value = `${now.getFullYear()}-${golfPad2(now.getMonth()+1)}-${golfPad2(now.getDate())}`;
+  if (tEl && !tEl.value) tEl.value = `${golfPad2((now.getHours()+1)%24)}:00`;
+  showStep("g0");
+  window.scrollTo(0, 0);
+}
+
+function exitGolfMode(){
+  golfMode = false;
+  document.body.classList.remove("golf-mode");
+  try { history.pushState({}, "", location.pathname); } catch(e){}
+  showStep(0);
+  window.scrollTo(0, 0);
+}
+
+/* ── ② 今日の一局 ── */
+function golfSaveContext(){
+  const course = document.getElementById("gCourse").value.trim();
+  if (!course) return toast(t("g1_course_required"));
+  golfCourse = course;
+  golfNotes  = document.getElementById("gNotes").value.trim();
+  showStep("g2");
+}
+
+
+/* ── ③A 実物のサイコロ ── */
+function golfConfirmDiceInput(){
+  const upper = document.getElementById("gUpper").value;
+  const lower = document.getElementById("gLower").value;
+  const movingSelect = document.getElementById("gMoving");
+  const movingLabel = movingSelect.options[movingSelect.selectedIndex].text;
+  document.getElementById("gConfirmDice").innerText =
+    `${t("confirm_upper")}：${upper}\n` +
+    `${t("confirm_lower")}：${lower}\n` +
+    `${t("confirm_moving")}：${movingLabel}`;
+  showStep("g4");
+}
+
+function golfManualCast(){
+  const gua = generateGua({
+    upper: document.getElementById("gUpper").value,
+    lower: document.getElementById("gLower").value,
+    movingLine: Number(document.getElementById("gMoving").value)
+  });
+  gua.castTime = golfTeeDateTime();
+  playGuaTransition(() => golfShowResult(gua));
+}
+
+/* ── ③B 虛擬投骰：確率は本站の乱数起卦と等価
+   （upper 1-8 均等 / lower 1-8 均等 / 動爻 1-6 均等 → generateGua） ── */
+function golfVirtualCast(){
+  const gua = generateGua({
+    upper: randomBagua(),
+    lower: randomBagua(),
+    movingLine: Math.floor(Math.random() * 6) + 1
+  });
+  gua.castTime = golfTeeDateTime();
+  /* 本站と同一の六爻顕現アニメーション（断→連→漩渦収縮）で成卦する */
+  playYaoCastAnimation(() => golfShowResult(gua));
+}
+
+/* ── ④⑤ 揭曉と策略字 ── */
+function golfShowResult(r){
+  const base = r.baseHexagram;
+  const movingText = base.yaoCi[r.movingLine] || EMPTY_TEXT;
+  const movingXiaoXiang = base.xiaoXiang?.[r.movingLine] || EMPTY_TEXT;
+
+  /* 卦影生成・gic確認ダイアログの共有ポイント */
+  lastGua = { r, movingText, movingXiaoXiang };
+  concern = golfNotes;
+
+  const box = document.getElementById("gHexLines");
+  box.innerHTML = "";
+  /* 卦象の爻線は全て同色。動爻は下の朱色ラベルと卦影で示す（本站と同じ規範） */
+  r.baseLines.slice().reverse().forEach(l => {
+    const div = document.createElement("div");
+    div.className = l === 1 ? "line" : "line broken";
+    box.appendChild(div);
+  });
+
+  document.getElementById("gGuaGlyph").innerText = base.name;
+  document.getElementById("gGuaLabel").innerText =
+    currentLang === "en" ? `Hexagram ${base.id}` : `第${base.id}${t("rec_gua")}`;
+  document.getElementById("gGuaMeta").innerText =
+    `${t("rec_base")}：${BAGUA_LABELS[r.upper]}上｜${BAGUA_LABELS[r.lower]}下`;
+  document.getElementById("gMovingLine").innerText =
+    `${t("rec_moving")} · ${r.movingLineName}`;
+
+  const ct = formatCastTime(r.castTime);
+  document.getElementById("gTeeLine").innerHTML =
+    `${t("g5_tee_label")}｜${golfCourse}<br>${ct.solar}<br>${ct.ganzhi}`;
+
+  /* 策略字（⑤：一屏一字の主角、無料） */
+  const gw = GOLF_WORDS[base.id];
+  document.getElementById("gWord").innerText = gw ? gw.w : "";
+  document.getElementById("gWordLine").innerText = golfWordLine(base.id);
+
+  showStep("g5");
+  window.scrollTo(0, 0);
+}
+
+/* ── ⑦ 読み解き插口（Phase 0：招待コード → ローカルでプロンプト拼装）
+   将来：同じボタンを Stripe Checkout → token → Worker(API) に差し替え、
+   ボタン・パネル・ローディングの外形は変えない。 ── */
+function golfOpenReading(){
+  if (!lastGua) return toast(t("toast_no_record"));
+  const modal = document.getElementById("golfCodeModal");
+  modal.style.display = "flex";
+  const inp = document.getElementById("gCodeInput");
+  inp.value = "";
+  setTimeout(() => inp.focus(), 60);
+}
+
+function golfCodeCancel(){
+  document.getElementById("golfCodeModal").style.display = "none";
+}
+
+function golfCodeSubmit(){
+  const code = document.getElementById("gCodeInput").value.trim().toUpperCase();
+  if (!GOLF_CODES.includes(code)) return toast(t("g_code_wrong"));
+  document.getElementById("golfCodeModal").style.display = "none";
+  const prompt = buildGolfPrompt();
+  document.getElementById("gPanelText").textContent = prompt;
+  golfCopyText(prompt);
+  document.getElementById("golfPromptPanel").style.display = "flex";
+}
+
+function buildGolfPrompt(){
+  const { r, movingText, movingXiaoXiang } = lastGua;
+  const base = r.baseHexagram;
+  const changed = r.changedHexagram;
+  const gw = GOLF_WORDS[base.id] || { w: "", l: "" };
+  const labels = scriptureLabels();
+  const ct = formatCastTime(r.castTime);
+  const numLabel = (hex) =>
+    currentLang === "en" ? `Hexagram ${hex.id} ${hex.name}` : `第${hex.id}${t("rec_gua")} ${hex.name}`;
+
+  const L = [];
+  L.push(t("gp_title"));
+  L.push("");
+  L.push(`${t("g1_course_label")}：${golfCourse}`);
+  L.push(`${t("g_img_tee_label")}：${ct.solar}（${ct.ganzhi}）`);
+  if (golfNotes) L.push(`${t("gp_note_label")}：${golfNotes}`);
+  L.push("");
+  L.push(`${t("rec_base")}：${numLabel(base)}`);
+  L.push(`${labels.guaCi}：${base.guaCi}`);
+  L.push(`${t("rec_moving")}：${r.movingLineName}`);
+  L.push(`${labels.yaoCi}：${movingText}`);
+  L.push(`${labels.xiaoXiang}：${movingXiaoXiang}`);
+  L.push(`${t("rec_changed")}：${numLabel(changed)}`);
+  L.push("");
+  L.push(`${t("gp_word_label")}：「${gw.w}」 — ${golfWordLine(base.id)}`);
+  L.push("");
+  L.push("---");
+  L.push("");
+  L.push(t("gp_instruction"));
+  return L.join("\n");
+}
+
+function golfCopyText(text){
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(() => toast(t("toast_copied")))
+      .catch(() => {});
+  }
+}
+
+function golfPanelCopy(){
+  golfCopyText(document.getElementById("gPanelText").textContent);
+}
+
+function golfPanelClose(){
+  document.getElementById("golfPromptPanel").style.display = "none";
+}
+
+/* ── 入口の解決：URL パラメータが正門 ── */
+function golfSyncFromUrl(){
+  let isGolf = false;
+  try { isGolf = new URLSearchParams(location.search).get("mode") === "golf"; } catch(e){}
+  if (isGolf && !golfMode) enterGolfMode(false);
+  else if (!isGolf && golfMode){
+    golfMode = false;
+    document.body.classList.remove("golf-mode");
+    showStep(0);
+  }
+}
+window.addEventListener("popstate", golfSyncFromUrl);
+golfSyncFromUrl();
 
 </script>
 </body>
