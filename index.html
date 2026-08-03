@@ -1973,7 +1973,9 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
   <button onclick="requestGuaImage()" data-i18n="img_btn">卦影を生成</button>
 
   <button onclick="copyRecord()" data-i18n="result_copy_btn">この記録をコピー</button>
-  
+
+  <button class="secondary" onclick="openReading()" data-i18n="reading_btn">この卦を読み解く</button>
+
 <p style="
 margin-top:16px;
 text-align:center;
@@ -2172,6 +2174,38 @@ line-height:1.9;
     opacity:0;
     transition:opacity 1.5s ease;
   "></div>
+</div>
+
+<!-- ════ 解読：内測コード & 結果パネル ════ -->
+<div id="readCodeModal" style="display:none;position:fixed;inset:0;z-index:10000;
+     background:rgba(8,7,5,.92);align-items:center;justify-content:center;padding:28px;">
+  <div style="max-width:340px;width:100%;text-align:center;">
+    <div style="color:var(--accent);font-size:12px;letter-spacing:.24em;margin-bottom:18px;"
+         data-i18n="read_code_title">内測コード</div>
+    <input id="readCodeInput" type="text" autocomplete="off" spellcheck="false"
+      style="width:100%;padding:13px 14px;background:#16130E;border:1px solid #3B3327;
+             border-radius:4px;color:#E7DCC6;font-size:15px;text-align:center;
+             letter-spacing:.12em;outline:none;font-family:inherit;" />
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button class="secondary" style="flex:1;margin:0;" onclick="readCodeCancel()"
+              data-i18n="read_cancel">やめる</button>
+      <button style="flex:1;margin:0;" onclick="readCodeSubmit()"
+              data-i18n="read_confirm">確認</button>
+    </div>
+  </div>
+</div>
+
+<div id="readPanel" style="display:none;position:fixed;inset:0;z-index:10000;
+     background:#100E0A;flex-direction:column;padding:26px 22px 20px;">
+  <div style="color:var(--accent);font-size:12px;letter-spacing:.24em;
+              margin-bottom:16px;flex:0 0 auto;" id="readPanelTitle"></div>
+  <div id="readPanelBody" style="flex:1 1 auto;overflow-y:auto;color:#E7DCC6;
+       font-size:15px;line-height:2.1;white-space:pre-wrap;
+       font-family:'Noto Serif JP','Noto Serif TC',serif;-webkit-overflow-scrolling:touch;"></div>
+  <div id="readPanelSrc" style="flex:0 0 auto;display:none;margin-top:14px;padding-top:12px;
+       border-top:1px solid #3B3327;color:#82755F;font-size:11.5px;line-height:1.85;"></div>
+  <button style="flex:0 0 auto;margin-top:16px;" onclick="readPanelClose()"
+          data-i18n="read_close">閉じる</button>
 </div>
 
 <div class="toast" id="toast" data-i18n="toast_copied">コピーしました</div>
@@ -4343,6 +4377,138 @@ async function generateGuaImage(includeUserText) {
   }
 }
 
+/* ══════════════════════════════════════════════
+   KIZASHI 解読 API
+   Worker部署後、url を書き換えるだけで有効になる。
+   凭证は現在「内測コード」。将来 Stripe token に差し替え。
+   ══════════════════════════════════════════════ */
+const KIZASHI_API = {
+  url: "https://kizashi-api.kizashi.workers.dev"
+};
+
+let readMode = "main";      /* "main" | "golf" */
+let readBusy = false;
+
+function openReading(){
+  if (!lastGua) return toast(t("toast_no_record"));
+  readMode = "main";
+  showReadCodeModal();
+}
+
+function showReadCodeModal(){
+  const m = document.getElementById("readCodeModal");
+  m.style.display = "flex";
+  const i = document.getElementById("readCodeInput");
+  i.value = "";
+  setTimeout(() => i.focus(), 60);
+}
+
+function readCodeCancel(){
+  document.getElementById("readCodeModal").style.display = "none";
+}
+
+function readPanelClose(){
+  document.getElementById("readPanel").style.display = "none";
+}
+
+function readCodeSubmit(){
+  const code = document.getElementById("readCodeInput").value.trim().toUpperCase();
+  if (!code) return;
+  document.getElementById("readCodeModal").style.display = "none";
+  fetchReading(code);
+}
+
+/* 問いの組み立て（主站 / Golf 共通） */
+function buildQuestion(){
+  if (readMode === "golf"){
+    const parts = ["今日の一局（ゴルフ）"];
+    if (golfCourse) parts.push("コース：" + golfCourse);
+    try {
+      const ct = formatCastTime(lastGua.r.castTime || golfTeeDateTime());
+      parts.push("ティーオフ：" + ct.solar + "（" + ct.ganzhi + "）");
+    } catch(e){}
+    if (golfNotes) parts.push(golfNotes);
+    return parts.join("\n");
+  }
+  let q = `${selectedIntent}（${selectedIntentDesc}）／${selectedCategory}（${selectedCategoryDesc}）`;
+  if (concern) q += "\n" + concern;
+  return q;
+}
+
+async function fetchReading(credential){
+  if (readBusy) return;
+  const panel = document.getElementById("readPanel");
+  const title = document.getElementById("readPanelTitle");
+  const body  = document.getElementById("readPanelBody");
+  const src   = document.getElementById("readPanelSrc");
+
+  panel.style.display = "flex";
+  src.style.display = "none";
+  src.textContent = "";
+  title.innerText = t("read_title");
+
+  if (!KIZASHI_API.url){
+    body.innerText = t("read_cfg");
+    return;
+  }
+
+  readBusy = true;
+  body.innerText = t("read_loading");
+
+  const r = lastGua.r;
+  // 提示词由後端持有，前端只传语言。護城河不外泄。
+  const payload = {
+    credential,
+    hexagram_no: r.baseHexagram.id,
+    line_position: r.movingLine,
+    question: buildQuestion(),
+    lang: currentLang
+  };
+  if (readMode === "golf" && typeof GOLF_WORDS !== "undefined"){
+    const gw = GOLF_WORDS[r.baseHexagram.id];
+    if (gw){ payload.golf_word = gw.w; payload.golf_line = gw.l; }
+  }
+
+  // 前端超时兜底（後端 50s，前端给 60s）
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 60000);
+
+  try {
+    const resp = await fetch(KIZASHI_API.url.replace(/\/$/, "") + "/api/reading", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    const data = await resp.json().catch(() => ({}));
+
+    if (resp.status === 403){
+      body.innerText = t(data.error === "origin_not_allowed" ? "read_err" : "read_code_bad");
+    } else if (resp.status === 502 || data.error === "upstream_timeout"){
+      body.innerText = t("read_timeout");
+    } else if (!resp.ok){
+      body.innerText = t("read_err");
+    } else {
+      body.innerText = data.reading || t("read_err");
+      if (Array.isArray(data.sources) && data.sources.length){
+        src.style.display = "block";
+        let s = t("read_src") + "：" + data.sources.map(x =>
+          x.hexagram_name + (x.line_name ? "・" + x.line_name : "")
+          + (x.topic_label ? "・問" + x.topic_label : "")
+        ).join("　");
+        if (typeof data.uses_left === "number")
+          s += "　｜　" + t("read_uses_left") + " " + data.uses_left;
+        src.innerText = s;
+      }
+    }
+  } catch(e){
+    body.innerText = t(e && e.name === "AbortError" ? "read_timeout" : "read_err");
+  } finally {
+    clearTimeout(timer);
+    readBusy = false;
+  }
+}
+
 function copyRecord() {
   if (!finalRecord) return toast(t('toast_no_record'));
 
@@ -4653,6 +4819,19 @@ const LANG_DATA = {
   /* ── Toast messages ── */
   toast_copied:       { ja: "コピーしました",      zh: "記錄已複製", en: "Copied" },
   toast_copy_fail:    { ja: "コピーに失敗しました。手動でコピーしてください", zh: "複製失敗，請手動複製", en: "Copy failed. Please copy manually." },
+  reading_btn:     { ja: "この卦を読み解く", zh: "解讀此卦", en: "Read this hexagram" },
+  read_title:      { ja: "高島易断に照らして", zh: "參照高島易斷", en: "In light of Takashima Ekidan" },
+  read_code_title: { ja: "内測コード", zh: "內測碼", en: "Access code" },
+  read_confirm:    { ja: "確認", zh: "確認", en: "Confirm" },
+  read_cancel:     { ja: "やめる", zh: "取消", en: "Cancel" },
+  read_close:      { ja: "閉じる", zh: "關閉", en: "Close" },
+  read_loading:    { ja: "典籍を繙いています……", zh: "正在翻閱典籍……", en: "Consulting the classics…" },
+  read_src:        { ja: "参照した記録", zh: "所引斷例", en: "References" },
+  read_code_bad:   { ja: "コードが無効です。回数切れか、期限切れの可能性があります。", zh: "此碼無效，可能已用完或過期。", en: "Invalid code — it may be used up or expired." },
+  read_err:        { ja: "解読を取得できませんでした。少し時間を置いてお試しください。", zh: "暫時無法取得解讀，請稍後再試。", en: "Could not fetch the reading. Please try again shortly." },
+  read_cfg:        { ja: "APIが未設定です。KIZASHI_API.url を設定してください。", zh: "尚未設定 API：請填入 KIZASHI_API.url。", en: "API not configured: set KIZASHI_API.url." },
+  read_timeout:    { ja: "解読に時間がかかっています。少し置いてもう一度お試しください。", zh: "解讀耗時較長，請稍後再試一次。", en: "The reading is taking too long. Please try again shortly." },
+  read_uses_left:  { ja: "残り", zh: "剩餘", en: "left:" },
   toast_no_record:    { ja: "コピーできる記録がありません", zh: "尚無可複製的記錄", en: "No record to copy" },
   toast_select_intent:{ ja: "まず「問事」か「問心」を選んでください", zh: "請先選擇問事或問心", en: "Please select On Events or On the Heart first" },
   toast_select_cat:   { ja: "分野を選んでください", zh: "請先選擇一類", en: "Please select a category" },
@@ -6225,11 +6404,8 @@ function golfShowResult(r){
    ボタン・パネル・ローディングの外形は変えない。 ── */
 function golfOpenReading(){
   if (!lastGua) return toast(t("toast_no_record"));
-  const modal = document.getElementById("golfCodeModal");
-  modal.style.display = "flex";
-  const inp = document.getElementById("gCodeInput");
-  inp.value = "";
-  setTimeout(() => inp.focus(), 60);
+  readMode = "golf";
+  showReadCodeModal();
 }
 
 function golfCodeCancel(){
