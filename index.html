@@ -194,6 +194,16 @@ body::after {
   margin:0 0 16px;
 }
 
+.btn-note {
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+  letter-spacing:.06em;
+  line-height:1.6;
+  margin:8px 0 26px;
+  opacity:.85;
+}
+
 .prompt-copy {
   font-size:14.5px;
   line-height:2;
@@ -272,6 +282,16 @@ button.secondary:hover:not(:disabled) {
 
 button.secondary::after {
   display:none;
+}
+
+/* 解読ボタン：付費入口 · 金色強調（尺寸与默认按钮一致） */
+button.btn-accent {
+  color:var(--accent);
+}
+
+button.btn-accent:hover:not(:disabled) {
+  color:var(--accent);
+  opacity:.82;
 }
 
 button:disabled {
@@ -1971,21 +1991,13 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
   </details>
 
   <button onclick="requestGuaImage()" data-i18n="img_btn">卦影を生成</button>
+  <div class="btn-note" data-i18n="btn_note_img">画像を生成して端末に保存</div>
+
+  <button class="btn-accent" onclick="openReading()" data-i18n="reading_btn">この卦を読み解く</button>
+  <div class="btn-note" data-i18n="btn_note_reading">古典に照らした解読 · お尋ねの内容は AI に送信されます</div>
 
   <button onclick="copyRecord()" data-i18n="result_copy_btn">この記録をコピー</button>
-
-  <button class="secondary" onclick="openReading()" data-i18n="reading_btn">この卦を読み解く</button>
-
-<p style="
-margin-top:16px;
-text-align:center;
-font-size:15px;
-color:var(--accent);
-font-weight:500;
-line-height:1.9;
-">
-<span data-i18n="result_next">次のステップ：<br>コピーした内容を AI に送ってください。<br>卦象の解釈は、そこで続きます。</span>
-</p>
+  <div class="btn-note" data-i18n="btn_note_copy">問いと卦・爻辞をまとめてコピー</div>
 
 </section>
 
@@ -2121,7 +2133,10 @@ line-height:1.9;
   <div class="g-word-line" id="gWordLine"></div>
 
   <button onclick="requestGuaImage()" data-i18n="img_btn">卦影を生成</button>
-  <button class="secondary" onclick="golfOpenReading()" data-i18n="g6_read_btn">この一局を読み解く</button>
+  <div class="btn-note" data-i18n="btn_note_img">画像を生成して端末に保存</div>
+
+  <button class="btn-accent" onclick="golfOpenReading()" data-i18n="g6_read_btn">この一局を読み解く</button>
+  <div class="btn-note" data-i18n="btn_note_reading">古典に照らした解読 · お尋ねの内容は AI に送信されます</div>
 
   <div class="g-bridge" onclick="exitGolfMode()">
     <span class="g-bridge-text" data-i18n="g6_bridge">人生にも、局がある。</span>
@@ -2198,12 +2213,13 @@ line-height:1.9;
 <div id="readPanel" style="display:none;position:fixed;inset:0;z-index:10000;
      background:#100E0A;flex-direction:column;padding:26px 22px 20px;">
   <div style="color:var(--accent);font-size:12px;letter-spacing:.24em;
-              margin-bottom:16px;flex:0 0 auto;" id="readPanelTitle"></div>
+              margin:0 auto 16px;flex:0 0 auto;width:100%;max-width:640px;" id="readPanelTitle"></div>
   <div id="readPanelBody" style="flex:1 1 auto;overflow-y:auto;color:#E7DCC6;
-       font-size:15px;line-height:2.1;white-space:pre-wrap;
+       font-size:15px;line-height:2.1;white-space:pre-wrap;width:100%;max-width:640px;margin:0 auto;
        font-family:'Noto Serif JP','Noto Serif TC',serif;-webkit-overflow-scrolling:touch;"></div>
-  <div id="readPanelSrc" style="flex:0 0 auto;display:none;margin-top:14px;padding-top:12px;
-       border-top:1px solid #3B3327;color:#82755F;font-size:11.5px;line-height:1.85;"></div>
+  <div id="readPanelSrc" style="flex:0 0 auto;display:none;margin:14px auto 0;padding-top:12px;
+       border-top:1px solid #3B3327;color:#82755F;font-size:11.5px;line-height:1.85;
+       width:100%;max-width:640px;white-space:pre-line;"></div>
   <button style="flex:0 0 auto;margin-top:16px;" onclick="readPanelClose()"
           data-i18n="read_close">閉じる</button>
 </div>
@@ -3964,7 +3980,7 @@ async function fetchReading(credential){
           + (x.topic_label ? "・問" + x.topic_label : "")
         ).join("　");
         if (typeof data.uses_left === "number")
-          s += "　｜　" + t("read_uses_left") + " " + data.uses_left;
+          s += "\n" + t("read_uses_left") + " " + data.uses_left;
         src.innerText = s;
       }
     }
@@ -4131,7 +4147,7 @@ const LANG_DATA = {
   flow_step6:         { ja: "⑥ 記録をコピーして、AIと対話を続ける", zh: "⑥ 複製記錄，與常用 AI 繼續對話", en: "⑥ Copy the record and continue with AI" },
   privacy_title:      { ja: "プライバシーについて", zh: "關於隱私", en: "About Privacy" },
   privacy_1:          { ja: "🔒 入力内容は、このデバイス内にのみ保存されます。", zh: "🔒 你的內容只會儲存在這台裝置中。", en: "🔒 Your input is stored only on this device." },
-  privacy_2:          { ja: "サーバーへの送信は行われません。", zh: "不會上傳至伺服器。", en: "Nothing is sent to any server." },
+  privacy_2:          { ja: "サーバーへの送信は行われません。※例外：解読機能を使う場合のみ、お尋ねの内容が AI に送信されます。", zh: "不會上傳至伺服器。【例外】使用解讀功能時，所問內容會發送給 AI 輔助解卦。", en: "Nothing is sent to any server — with one exception: when you use the reading feature, your question is sent to AI to assist the interpretation." },
   privacy_3:          { ja: "開発者があなたの問いを見ることはありません。", zh: "開發者無法查看你的問題。", en: "The developer cannot see your question." },
   flow_back:          { ja: "戻る",                 zh: "返回", en: "Back" },
   flow_start:         { ja: "儀式を始める",          zh: "開始儀式", en: "Begin the Ritual" },
@@ -4287,6 +4303,9 @@ const LANG_DATA = {
   toast_copied:       { ja: "コピーしました",      zh: "記錄已複製", en: "Copied" },
   toast_copy_fail:    { ja: "コピーに失敗しました。手動でコピーしてください", zh: "複製失敗，請手動複製", en: "Copy failed. Please copy manually." },
   reading_btn:     { ja: "この卦を読み解く", zh: "解讀此卦", en: "Read this hexagram" },
+  btn_note_img:     { ja: "画像を生成して端末に保存", zh: "生成圖片保存至本地", en: "Create an image saved to your device" },
+  btn_note_reading: { ja: "古典に照らした解読 · お尋ねの内容は AI に送信されます", zh: "參考古籍解讀 · 所問內容將發送給 AI 輔助解卦", en: "A reading grounded in the classics · your question is sent to AI" },
+  btn_note_copy:    { ja: "問いと卦・爻辞をまとめてコピー", zh: "一鍵複製所問內容與卦象爻辭", en: "Copy your question and the hexagram text" },
   read_title:      { ja: "高島易断に照らして", zh: "參照高島易斷", en: "In light of Takashima Ekidan" },
   read_code_title: { ja: "内測コード", zh: "內測碼", en: "Access code" },
   read_confirm:    { ja: "確認", zh: "確認", en: "Confirm" },
