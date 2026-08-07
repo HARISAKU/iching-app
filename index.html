@@ -1837,8 +1837,8 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
     </button>
   </div>
 
+  <button onclick="goOptionalInput()" data-i18n="optional_btn">この卦にもう少し語る（任意）</button>
   <button id="castBtn" onclick="continueToCasting()" data-i18n="cast_btn">起卦する</button>
-  <button class="secondary" onclick="goOptionalInput()" data-i18n="optional_btn">この卦にもう少し語る（任意）</button>
 </section>
 
 <section class="step" id="step-3">
@@ -2220,6 +2220,8 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
   <div id="readPanelSrc" style="flex:0 0 auto;display:none;margin:14px auto 0;padding-top:12px;
        border-top:1px solid #3B3327;color:#82755F;font-size:11.5px;line-height:1.85;
        width:100%;max-width:640px;white-space:pre-line;"></div>
+  <button id="readRetryBtn" class="btn-accent" style="flex:0 0 auto;margin-top:16px;display:none;"
+          onclick="readRetry()" data-i18n="read_retry">もう一度試す</button>
   <button style="flex:0 0 auto;margin-top:16px;" onclick="readPanelClose()"
           data-i18n="read_close">閉じる</button>
 </div>
@@ -3894,6 +3896,22 @@ function readPanelClose(){
   document.getElementById("readPanel").style.display = "none";
 }
 
+let lastCredential = "";
+let lastFailCode = false;
+
+function showReadRetry(codeInvalid){
+  lastFailCode = !!codeInvalid;
+  document.getElementById("readRetryBtn").style.display = "block";
+}
+function hideReadRetry(){
+  document.getElementById("readRetryBtn").style.display = "none";
+}
+function readRetry(){
+  hideReadRetry();
+  if (lastFailCode){ readPanelClose(); showReadCodeModal(); }
+  else fetchReading(lastCredential);
+}
+
 function readCodeSubmit(){
   const code = document.getElementById("readCodeInput").value.trim().toUpperCase();
   if (!code) return;
@@ -3936,6 +3954,8 @@ async function fetchReading(credential){
   }
 
   readBusy = true;
+  lastCredential = credential;
+  hideReadRetry();
   body.innerText = t("read_loading");
 
   const r = lastGua.r;
@@ -3966,11 +3986,15 @@ async function fetchReading(credential){
     const data = await resp.json().catch(() => ({}));
 
     if (resp.status === 403){
-      body.innerText = t(data.error === "origin_not_allowed" ? "read_err" : "read_code_bad");
+      const isCode = data.error !== "origin_not_allowed";
+      body.innerText = t(isCode ? "read_code_bad" : "read_err");
+      showReadRetry(isCode);
     } else if (resp.status === 502 || data.error === "upstream_timeout"){
       body.innerText = t("read_timeout");
+      showReadRetry(false);
     } else if (!resp.ok){
       body.innerText = t("read_err");
+      showReadRetry(false);
     } else {
       body.innerText = data.reading || t("read_err");
       if (Array.isArray(data.sources) && data.sources.length){
@@ -3986,6 +4010,7 @@ async function fetchReading(credential){
     }
   } catch(e){
     body.innerText = t(e && e.name === "AbortError" ? "read_timeout" : "read_err");
+    showReadRetry(false);
   } finally {
     clearTimeout(timer);
     readBusy = false;
@@ -4311,6 +4336,7 @@ const LANG_DATA = {
   read_confirm:    { ja: "確認", zh: "確認", en: "Confirm" },
   read_cancel:     { ja: "やめる", zh: "取消", en: "Cancel" },
   read_close:      { ja: "閉じる", zh: "關閉", en: "Close" },
+  read_retry:      { ja: "もう一度試す", zh: "再試一次", en: "Try again" },
   read_loading:    { ja: "典籍を繙いています……", zh: "正在翻閱典籍……", en: "Consulting the classics…" },
   read_src:        { ja: "参照した記録", zh: "所引斷例", en: "References" },
   read_code_bad:   { ja: "コードが無効です。回数切れか、期限切れの可能性があります。", zh: "此碼無效，可能已用完或過期。", en: "Invalid code — it may be used up or expired." },
