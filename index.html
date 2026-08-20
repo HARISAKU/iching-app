@@ -1322,7 +1322,7 @@ body.lang-zh h2 {
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
 }
 .yarrow-say-main{ font-size:14px; letter-spacing:.16em; color:var(--muted); line-height:2; }
-.yarrow-say-sub{ font-size:10px; letter-spacing:.24em; color:var(--soft); font-family:var(--f-sans); margin-top:6px; opacity:0; transition:opacity .4s; }
+.yarrow-say-sub{ font-size:11.5px; letter-spacing:.2em; color:var(--soft); font-family:var(--f-sans); margin-top:7px; opacity:0; transition:opacity .4s; }
 .yarrow-say-sub.on{opacity:1}
 @keyframes yarrowPulse{0%,100%{opacity:.34}50%{opacity:.9}}
 .yarrow-beckon{animation:yarrowPulse 2.6s ease-in-out infinite}
@@ -5379,7 +5379,7 @@ const YARROW_YAO = ['','初','二','三','四','五','上'];
 const Y_VB = { W:400, H:340, L:52, R:348, TOP:46, BOT:300 };
 
 let yPhase = 0, yResults = [], yStalks = [];
-let yLocked = true, yDragging = false, yBound = false;
+let yLocked = true, yDragging = false, yBound = false, yViewed = false;
 
 function yEl(id){ return document.getElementById(id); }
 function yNum(n){ return currentLang === 'en' ? String(n) : YARROW_NUM[n]; }
@@ -5595,15 +5595,20 @@ function yReveal(rem){
   }, 2100);
 }
 
-/* 成卦：査看卦象ボタンを出す */
+/* 成卦：卦象へ自動遷移（ボタンは即時遷移用の任意手段）
+   ※拡大表示などで画面外のボタンを探せなくなる事故を防ぐため、
+     ボタン依存をやめて必ず自動で進む。 */
 function yFinish(){
   for (let i = 0; i < 3; i++) yEl('yd' + i).className = 'yarrow-dot done';
   ySetSay(t('yr_say_done'), false);
   yEl('yarrowViewBtn').classList.add('on');
+  setTimeout(() => { if (!yViewed) yarrowView(); }, 2400);
 }
 
 /* 卦象へ：サイコロ起卦と同一の過渡動画（六爻線アニメは使わない） */
 function yarrowView(){
+  if (yViewed) return;
+  yViewed = true;
   const gua = generateGua({
     upper: YARROW_TRI[yResults[1] - 1],
     lower: YARROW_TRI[yResults[0] - 1],
@@ -5645,7 +5650,7 @@ function yOnUp(){
 function startYarrow(){
   const ov = yEl('yarrowOverlay');
   if (!ov) return;
-  yPhase = 0; yResults = []; yLocked = true; yDragging = false;
+  yPhase = 0; yResults = []; yLocked = true; yDragging = false; yViewed = false;
   yEl('yTaikyokuG').innerHTML = '';
   yEl('yBundleG').innerHTML = '';
   yEl('yJinG').innerHTML = '';
