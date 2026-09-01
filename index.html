@@ -1370,31 +1370,26 @@ body.lang-zh h2 {
    緑は大面積低輝度の背景要素のみ、文字とボタンは既存の暖金
    ════════════════════════════════════════════ */
 
-/* ── 首頁側門：遠山の入口 ── */
-.golf-entry {
-  margin-top: 34px;
-  padding-top: 4px;
-  text-align: center;
+/* ── 首頁の隠し門：右下の遠山 ──
+   QRが正門。これは「そこに山がある」と知らされた人だけが見つける裏口。
+   ほぼ見えない濃度で置き、首頁でのみ現れる。 */
+.golf-door {
+  position: fixed;
+  bottom: 12px;
+  right: max(12px, calc(50vw - 240px + 8px));  /* デスクトップでは 480px 段の右端に寄せる */
+  padding: 11px;                                /* 見た目は小さく、タップ領域は確保 */
   cursor: pointer;
+  opacity: .13;                                 /* 気づく人だけ。知らない人の視線は滑る */
+  transition: opacity .6s ease;
   -webkit-tap-highlight-color: transparent;
+  z-index: 3;
+  display: none;                                /* 既定は非表示 */
 }
-.golf-entry::before {
-  content: "";
-  display: block;
-  width: 72px;
-  height: 1px;
-  margin: 0 auto 18px;
-  background: linear-gradient(90deg, transparent, var(--line), transparent);
-}
-.golf-entry svg { display: block; margin: 0 auto 8px; opacity: .85; }
-.golf-entry .golf-entry-text {
-  font-family: var(--f-serif);
-  font-size: 13px;
-  letter-spacing: .18em;
-  color: var(--soft);
-  transition: color .5s ease;
-}
-.golf-entry:hover .golf-entry-text { color: var(--golf-soft); }
+.golf-door svg { display: block; }
+body.on-home .golf-door { display: block; }     /* 首頁だけに現れる */
+.golf-door:hover,
+.golf-door:focus-visible { opacity: .5; outline: none; }
+@media (hover: none) { .golf-door { opacity: .17; } }  /* タッチ端末は hover が無いので僅かに上げる */
 
 /* ── Golf 場面の共通語彙 ── */
 body.golf-mode .eyebrow { color: var(--golf-soft); }
@@ -1659,7 +1654,7 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
 </style>
 </head>
 
-<body>
+<body class="on-home">
 
 <!-- ── 神庙激活动效层 ── -->
 <div id="shrine-overlay">
@@ -1718,15 +1713,6 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
       onclick="showStep('flow')" data-i18n="firstTime_btn">
       儀式の流れを見る
     </button>
-  </div>
-
-  <!-- 側門：遠山の入口 ── 首頁で唯一の緑、気づいた人だけの風景 -->
-  <div class="golf-entry" onclick="enterGolfMode(true)">
-    <svg width="150" height="30" viewBox="0 0 150 30">
-      <path d="M0 30 L30 8 L54 24 L76 4 L102 20 L126 10 L150 30 Z" fill="var(--golf-deep)" opacity=".6"/>
-      <path d="M0 30 L44 18 L80 27 L116 15 L150 30 Z" fill="var(--golf-soft)" opacity=".16"/>
-    </svg>
-    <span class="golf-entry-text" data-i18n="g_home_entry">コースの一局を観る</span>
   </div>
 </section>
 
@@ -2155,6 +2141,14 @@ input.g-input:focus, #step-g1 input:focus { border-color: var(--golf-deep); }
 </section>
 
 </div>
+
+<!-- 隠し門：右下の遠山。QRが正門、これは知っている人だけの裏口。首頁でのみ現れる -->
+<div class="golf-door" onclick="enterGolfMode(true)" role="button" aria-label="golf" tabindex="0"
+     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();enterGolfMode(true);}">
+  <svg width="40" height="13" viewBox="0 0 40 13" aria-hidden="true">
+    <path d="M0 13 L9 3 L16 10 L23 1 L31 8 L40 13 Z" fill="var(--golf-soft)"/>
+  </svg>
+</div>
 </main>
 
 <div id="castingOverlay" style="
@@ -2426,6 +2420,9 @@ window.addEventListener("resize", updateScrollHint);
 
 function showStep(n) {
   document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+
+  /* 首頁の隠し門は step-0（数値 0）でのみ現れる。golf 各画面・儀式の流れ・起卦中は消える */
+  document.body.classList.toggle("on-home", n === 0 || n === "0");
 
   if (typeof n === "string") {
     document.getElementById(`step-${n}`).classList.add("active");
